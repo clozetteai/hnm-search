@@ -6,18 +6,24 @@ class Prompts:
         self,
         table_name: str,
         database,
-        query: str
     ):
         self.table_name = table_name
         self.db = database
-        self.prompt = f"""
+
+    def _sample_rows(self, limit=3):
+        self.db.execute(f"SELECT * FROM {self.table_name} LIMIT {limit}")
+        rows = self.db.fetchall()
+        return rows
+    
+    def __call__(self, query):
+        return f"""
 ## TASK: convert the given QUERY to a SQL statement. Strictly don't change the values of column names, keep the required spaces, etc.
 Always add required quotes for all the names, db or columns, as the names may contain spaces.
 """ + f"""
 ## QUERY: {query}
 """ + f"""
 ## TABLE DETAILS:
-### TABLE NAME: {table_name}
+### TABLE NAME: {self.table_name}
 ### COLUMN NAMES: {json.dumps(get_db_columns(self.db), indent=4)}""" + f"""
 
 ### EXAMPLE ROWS FROM THE TABLE:
@@ -28,11 +34,3 @@ Always add required quotes for all the names, db or columns, as the names may co
     \"sql_prompt\": SQL_PROMPT
 }
 """
-
-    def _sample_rows(self, limit=3):
-        self.db.execute(f"SELECT * FROM {self.table_name} LIMIT {limit}")
-        rows = self.db.fetchall()
-        return rows
-    
-    def __call__(self):
-        return self.prompt
