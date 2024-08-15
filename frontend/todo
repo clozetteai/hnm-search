@@ -1,0 +1,17 @@
+How the app would flow:
+
+1. You start with normal recommendation like business like recommendation
+2. And then you have your search bar in the bottom 
+3. And then you have a sidebar
+    1. You have a pretty standard sidebar with a list of categories
+    2. And then you have search sessions which you can save when you enter a session
+4. You have a session button
+    1. You can start a session
+    2. You can end a session
+    3. You can save a session
+    4. You can delete a session
+    5. While you are in a session you can see the product with a long press
+    6. Once recommendation cards end while scrolling, it automatically switches to history based recommendation and business recommendation 
+5. A search bar needs to understand what kind of search to go for?
+    1. Whether to go for a keyword based search
+    2. Or whether to go for a search which is more text to SQL based 
