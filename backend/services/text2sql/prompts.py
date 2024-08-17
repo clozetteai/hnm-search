@@ -28,8 +28,16 @@ class Prompts:
 Always add required quotes for all the names, db or columns, as the names may contain spaces.
 Make sure the values used are from the 'unique_values' fields only for those that have it.
 
-## IMPORTANT: For the SQL query generated, the 'where' clause should not exactly match for a string
-as it may be slightly different, do a 'fuzzy-search' or 'contains' matching 
+## IMPORTANT Things to keep in mind: 
+1. For the SQL query generated, the 'where' clause should not exactly match for a string
+as it may be slightly different, do a 'fuzzy-search' or 'contains' matching
+2. Never do 'SELECT *' always do 'SELECT             
+article_id, prod_name, product_type_name, product_group_name, department_name,
+index_name, section_name, detail_desc, graphical_appearance_name, colour_group_name,
+perceived_colour_value_name'
+3. With 'WHERE' clause conditions, NEVER use 'AND', always use 'OR', and make sure conditions are 
+not case-sensitive, so make them LOWER before comparing.
+
 """ + f"""
 ## QUERY: {query}
 """ + f"""

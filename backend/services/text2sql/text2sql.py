@@ -66,5 +66,47 @@ class Text2SQL:
         generated_output = self.call_llm(llm_prompt)
         return json.loads(generated_output)
     
-    def execute_query(self):
-        ...
+    def execute_query(self, query, num_of_tries=1):
+        errors_list = []
+        result = None
+        
+        for attempt in range(num_of_tries):
+            cursor = self.database.cursor()
+            try:
+                if len(errors_list) > 0:
+                    PROMPT = f"""
+# TASK: Correct the following SQL statement based on the following error list.
+Make sure for the SQL query generated, the 'where' clause should not exactly match for a string
+as it may be slightly different, do a 'fuzzy-search' or 'contains' matching 
+Make sure Never do 'SELECT *' always do 'SELECT             
+article_id, prod_name, product_type_name, product_group_name, department_name,
+index_name, section_name, detail_desc, graphical_appearance_name, colour_group_name,
+perceived_colour_value_name'
+
+# Latest error:
+{errors_list[-1]}
+
+# Full error List:
+{json.dumps(errors_list, indent=2)}
+
+# SQL Statement: {query}
+""" + """
+# Required Output Format:
+{
+    "sql_prompt": "query"
+}
+"""
+                    llm_output = json.loads(self.call_llm(PROMPT))
+                    query = llm_output["sql_prompt"]
+                cursor.execute(query)
+                result = cursor.fetchall() 
+                return result
+            except Exception as e:
+                errors_list.append(str(e))
+                if attempt < num_of_tries - 1:
+                    print(f"Attempt {attempt + 1} failed: {e}. Retrying...")
+                else:
+                    print(f"Attempt {attempt + 1} failed: {e}. No more retries.")
+        
+        return result, errors_list
+        
