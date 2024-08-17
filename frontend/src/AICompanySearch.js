@@ -4,6 +4,11 @@ import Sidebar from './Sidebar';
 
 // API client (to be replaced with actual API calls)
 const apiClient = {
+  fetchCatalog: async (page = 1, limit = 10) => {
+    const response = await fetch(`http://localhost:8000/api/catalog?page=${page}&limit=${limit}`);
+    if (!response.ok) throw new Error('Failed to fetch catalog');
+    return response.json();
+  },
   search: async (query, type, page = 1, limit = 10) => {
     const response = await fetch(`http://localhost:8000/api/search?query=${query}&type=${type}&page=${page}&limit=${limit}`);
     if (!response.ok) throw new Error('Search failed');
@@ -104,6 +109,23 @@ const AICompanySearch = () => {
     if (node) observer.current.observe(node);
   }, [isLoading, hasMore]);
 
+  const fetchProducts = useCallback(async (newQuery = '', type = 'text', newPage = 1) => {
+    setIsLoading(true);
+    try {
+      const response = newQuery
+        ? await apiClient.search(newQuery, type, newPage)
+        : await apiClient.fetchCatalog(newPage);
+      setSearchResults(prevResults => (newPage === 1 ? response.products : [...prevResults, ...response.products]));
+      setBotResponse(response.botResponse);
+      setHasMore(response.products.length === 10);
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+      setBotResponse('Sorry, there was an error processing your request.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const handleSearch = useCallback(async (newQuery, type) => {
     setIsLoading(true);
     setQuery(newQuery);
@@ -124,6 +146,16 @@ const AICompanySearch = () => {
   }, []);
 
   useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchProducts(query, searchType, page);
+    }
+  }, [page, query, searchType, fetchProducts]);
+
+  useEffect(() => {
     if (page > 1) {
       const fetchMoreProducts = async () => {
         setIsLoading(true);
@@ -140,6 +172,7 @@ const AICompanySearch = () => {
       fetchMoreProducts();
     }
   }, [page, query, searchType]);
+
 
   const handleImageUpload = async () => {
     // Implementation remains the same
@@ -174,7 +207,7 @@ const AICompanySearch = () => {
         <header className="bg-white p-4 shadow-md sticky top-0 z-10">
           <h1 className="text-2xl font-bold text-blue-600">Company.ai</h1>
         </header>
-        
+
         <main className="flex-grow overflow-auto p-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {searchResults.map((product, index) => (
@@ -189,7 +222,7 @@ const AICompanySearch = () => {
             </div>
           )}
         </main>
-        
+
         <footer className="bg-white p-4 pt-6 sticky bottom-0 z-10">
           <div className="bg-gray-100 rounded-t-3xl p-4 pb-8">
             {botResponse && (
@@ -198,7 +231,7 @@ const AICompanySearch = () => {
                 <p>{botResponse.split('\n\n')[1]}</p>
               </div>
             )}
-            <SearchBar 
+            <SearchBar
               onSearch={handleSearch}
               onImageUpload={handleImageUpload}
               onVoiceRecord={handleVoiceRecord}
