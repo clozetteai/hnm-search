@@ -138,6 +138,9 @@ So try to ask question from this only
                 "bot_output": json.loads(future_bot_output.result()["message"]["content"]),
                 "search_query": json.loads(future_search_query.result()["message"]["content"])
             }
+            
+    def reset(self):
+        self.message_list = []
     
     def converse(self, message: str):
         self.message_list.append({
