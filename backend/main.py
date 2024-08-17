@@ -2,11 +2,18 @@ import os
 import time
 import random
 from textwrap import dedent
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import HTTPException
 import base64
+from typing import List
+from connectors.s3.minio import minio_client
+from constants.constants import MINIO_BUCKET_NAME
+import uuid
+from minio.error import S3Error
+import io
+from datetime import timedelta
 
 app = FastAPI()
 
@@ -68,7 +75,6 @@ async def search(query: str, type: str, page: int = 1, limit: int = 10):
         }
     )
     
-# Upload image endpoint
 @app.post("/api/upload-image")
 async def upload_image(image: UploadFile = File(...)):
     time.sleep(1)  # Simulate delay
@@ -77,6 +83,54 @@ async def upload_image(image: UploadFile = File(...)):
         file.write(await image.read())
     return {"success": True, "message": "Image uploaded successfully"}
 
+
+@app.post("/api/search/image")
+async def image_search(prompt: str = Form(...), images: List[UploadFile] = File(None)):
+    time.sleep(1)  # Simulate delay
+
+    # Process and upload images to MinIO
+    uploaded_images = []
+    if images:
+        for image in images:
+            try:
+                content = await image.read()
+                print("filename: ", image.filename)
+                image_name = f"{uuid.uuid4()}_{image.filename}"  # Create a unique name for each image
+                
+                # Upload image to MinIO
+                minio_client.put_object(
+                    MINIO_BUCKET_NAME,
+                    image_name,
+                    io.BytesIO(content),  # Wrap content in BytesIO
+                    length=len(content),
+                    content_type=image.content_type
+                )
+                
+                # Generate presigned URL for the uploaded image (valid for 1 hour)
+                image_url = minio_client.presigned_get_object(
+                    MINIO_BUCKET_NAME, 
+                    image_name, 
+                    expires=timedelta(hours=1) 
+                )
+                uploaded_images.append(image_url)
+
+            except S3Error as e:
+                print(f"Error uploading image {image.filename}: {e}")
+
+    # Generate bot response
+    bot_response = dedent(f"""
+        Here is what I found for "{prompt}" with {len(uploaded_images)} image(s)\n\n
+        I've found some great options based on your text and image input. 
+        Let me know if you need more details! From backend
+    """)
+
+    return JSONResponse(
+        content={
+            "totalProducts": TOTAL_PRODUCTS,
+            "botResponse": bot_response,
+            "uploadedImages": uploaded_images 
+        }
+    )
 
 # Record voice endpoint
 @app.post("/api/record-voice")
