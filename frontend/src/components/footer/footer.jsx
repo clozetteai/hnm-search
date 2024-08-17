@@ -1,7 +1,7 @@
 import React from 'react';
 import SearchBar from '../searchbar/searchbar';
 
-const Footer = ({ botResponse, handleSearch, handleImageUpload, handleVoiceRecord }) => {
+const Footer = ({ botResponse, setBotResponse, handleSearch, handleImageUpload, handleVoiceRecord }) => {
   return (
     <footer className="bg-white p-4 pt-6 sticky bottom-0 z-10">
       <div className="bg-gray-100 rounded-t-3xl p-4 pb-8">
@@ -12,6 +12,7 @@ const Footer = ({ botResponse, handleSearch, handleImageUpload, handleVoiceRecor
           </div>
         )}
         <SearchBar
+          setBotResponse={setBotResponse}
           onSearch={handleSearch}
           onImageUpload={handleImageUpload}
           onVoiceRecord={handleVoiceRecord}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Loader } from 'lucide-react';
-import Sidebar from './Sidebar';
-import { Footer, ProductCard } from './components';
+import { Footer, ProductCard, Sidebar } from './components';
 import {ApiClient as apiClient }from './api/api';
 
 
@@ -113,7 +112,8 @@ const AICompanySearch = () => {
         </main>
 
         <Footer 
-          botResponse={botResponse} 
+          botResponse={botResponse}
+          setBotResponse={setBotResponse}
           handleImageUpload={handleImageUpload} 
           handleSearch={handleSearch}
           handleVoiceRecord={handleVoiceRecord}  

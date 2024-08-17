@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Image, Mic, Square, Play, X } from 'lucide-react';
+import { API_ENDPOINT } from '../../api/constant';
 
-const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
+const SearchBar = React.memo(({ onSearch, setBotResponse, onImageUpload, onVoiceRecord }) => {
   const [input, setInput] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -13,10 +14,46 @@ const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
   const audioChunksRef = useRef([]);
   const audioRef = useRef(new Audio());
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && input.trim() !== '') {
-      onSearch(input, 'text');
+  const handleKeyPress = async (e) => {
+    if (e.key === 'Enter' && (input.trim() !== '' || uploadedImages.length > 0)) {
+      e.preventDefault();
+      await handleSearch();
     }
+  };
+
+  const handleSearch = async () => {
+    const formData = new FormData();
+    formData.append('prompt', input);
+    
+    uploadedImages.forEach((image, index) => {
+      // Convert base64 to blob
+      const byteString = atob(image.split(',')[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([ab], { type: 'image/jpeg' });
+      formData.append('images', blob, `image_${index}.jpg`);  // Changed key to 'images'
+    });
+
+    try {
+      const response = await fetch(`${API_ENDPOINT}/api/search/image`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      setBotResponse(data.botResponse);
+
+      // text search
+      onSearch(data.botResponse);
+    } catch (error) {
+      console.error('Error during search:', error);
+    }
+  
+    // Clear the input and uploaded images after search
+    setInput('');
+    setUploadedImages([]);
   };
 
   const handleDrag = useCallback((e) => {
@@ -42,7 +79,6 @@ const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       setUploadedImages(prevImages => [...prevImages, e.target.result]);
-      onImageUpload(file);
     };
     reader.readAsDataURL(file);
   };
