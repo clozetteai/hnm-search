@@ -1,12 +1,12 @@
 import os
 import time
 import random
-import uvicorn
 from textwrap import dedent
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import HTTPException
+import base64
 
 app = FastAPI()
 
@@ -21,14 +21,19 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-IMAGE_DIR = "/home/anindya/workspace/opensource/company-ai/backend/assets"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+IMAGE_DIR = os.path.join(current_dir, "assets")
+print(IMAGE_DIR)
 
 # Dummy data starting here
 TOTAL_PRODUCTS = 1000
 ASSETS = [os.path.join(IMAGE_DIR, f"asset{i+1}.jpeg") for i in range(5)]
 
 
-import base64
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
 
 def generate_products(page: int, limit: int):
     products = []
@@ -62,8 +67,7 @@ async def search(query: str, type: str, page: int = 1, limit: int = 10):
             "botResponse": bot_response,
         }
     )
-
-
+    
 # Upload image endpoint
 @app.post("/api/upload-image")
 async def upload_image(image: UploadFile = File(...)):
@@ -84,7 +88,3 @@ async def record_voice(audio: UploadFile = File(...)):
     return {"success": True, "message": "Voice recorded successfully"}
 
 
-# if __name__ == "__main__":
-#     import uvicorn
-
-#     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
