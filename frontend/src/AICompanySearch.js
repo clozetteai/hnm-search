@@ -1,37 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Image, Mic, Loader, ShoppingBag } from 'lucide-react';
+import { Loader, ShoppingBag } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { Footer } from './components';
+import {ApiClient as apiClient }from './api/api';
 
-// API client (to be replaced with actual API calls)
-const apiClient = {
-  search: async (query, type, page = 1, limit = 10) => {
-    const response = await fetch(`http://localhost:8000/api/search?query=${query}&type=${type}&page=${page}&limit=${limit}`);
-    if (!response.ok) throw new Error('Search failed');
-    return response.json();
-  },
-  uploadImage: async (imageFile) => {
-    const formData = new FormData();
-    formData.append('image', imageFile);
-
-    const response = await fetch('http://localhost:8000/api/upload-image', {
-      method: 'POST',
-      body: formData,
-    });
-    if (!response.ok) throw new Error('Image upload failed');
-    return response.json();
-  },
-  recordVoice: async (audioBlob) => {
-    const formData = new FormData();
-    formData.append('audio', audioBlob);
-
-    const response = await fetch('http://localhost:8000/api/record-voice', {
-      method: 'POST',
-      body: formData,
-    });
-    if (!response.ok) throw new Error('Voice record failed');
-    return response.json();
-  },
-};
 
 const ProductCard = React.memo(({ title, price, imageUrl }) => (
   <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -48,40 +20,6 @@ const ProductCard = React.memo(({ title, price, imageUrl }) => (
 ));
 
 
-const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
-  const [input, setInput] = useState('');
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && input.trim() !== '') {
-      onSearch(input, 'text');
-    }
-  };
-
-  return (
-    <div className="flex justify-between items-center bg-white rounded-full p-2 shadow-md">
-      <button
-        onClick={onImageUpload}
-        className="text-gray-700 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-300"
-      >
-        <Image size={24} />
-      </button>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyPress={handleKeyPress}
-        placeholder="Search products..."
-        className="flex-grow mx-2 bg-transparent focus:outline-none"
-      />
-      <button
-        onClick={onVoiceRecord}
-        className="text-gray-700 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-300"
-      >
-        <Mic size={24} />
-      </button>
-    </div>
-  );
-});
 
 const AICompanySearch = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -148,7 +86,7 @@ const AICompanySearch = () => {
   const handleVoiceRecord = async () => {
     // Implementation remains the same
   };
-
+  // setChatSessions
   const [chatSessions, setChatSessions] = useState([
     { id: 1, title: "First Search" },
     { id: 2, title: "Product Inquiry" },
@@ -189,22 +127,13 @@ const AICompanySearch = () => {
             </div>
           )}
         </main>
-        
-        <footer className="bg-white p-4 pt-6 sticky bottom-0 z-10">
-          <div className="bg-gray-100 rounded-t-3xl p-4 pb-8">
-            {botResponse && (
-              <div className="bg-white p-4 rounded-lg mb-4 shadow-md">
-                <p className="font-semibold">{botResponse.split('\n\n')[0]}</p>
-                <p>{botResponse.split('\n\n')[1]}</p>
-              </div>
-            )}
-            <SearchBar 
-              onSearch={handleSearch}
-              onImageUpload={handleImageUpload}
-              onVoiceRecord={handleVoiceRecord}
-            />
-          </div>
-        </footer>
+
+        <Footer 
+          botResponse={botResponse} 
+          handleImageUpload={handleImageUpload} 
+          handleSearch={handleSearch}
+          handleVoiceRecord={handleVoiceRecord}  
+        />
       </div>
     </div>
   );
