@@ -7,6 +7,8 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import base64
 
+from routes import router as search_router
+
 app = FastAPI()
 
 # Enable CORS
@@ -54,46 +56,46 @@ async def get_catalog(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, l
     )
 
 
-@app.get("/api/search")
-async def search(
-    query: str = "",
-    type: str = "text",
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=50),
-):
-    time.sleep(1)  # Simulate delay
+# @app.get("/api/search")
+# async def search(
+#     query: str = "",
+#     type: str = "text",
+#     page: int = Query(1, ge=1),
+#     limit: int = Query(10, ge=1, le=50),
+# ):
+#     time.sleep(1)  # Simulate delay
 
-    if not query:
-        # If no query is provided, return the catalog
-        return await get_catalog(page, limit)
+#     if not query:
+#         # If no query is provided, return the catalog
+#         return await get_catalog(page, limit)
 
-    # Perform search (for demonstration, we'll just filter based on the query in the product title)
-    total_products = len(ASSETS)
+#     # Perform search (for demonstration, we'll just filter based on the query in the product title)
+#     total_products = len(ASSETS)
 
-    start_index = (page - 1) * limit
-    end_index = min(start_index + limit, total_products)
+#     start_index = (page - 1) * limit
+#     end_index = min(start_index + limit, total_products)
 
-    products = [
-        generate_product(i + 1, ASSETS[
-            random.choice(range(0, len(ASSETS)))
-        ])
-        for i in range(start_index, end_index)
-    ]
+#     products = [
+#         generate_product(i + 1, ASSETS[
+#             random.choice(range(0, len(ASSETS)))
+#         ])
+#         for i in range(start_index, end_index)
+#     ]
 
-    bot_response = dedent(
-        f"""
-        Here is what I found for "{query}"\n\nI've found {total_products} options for you. 
-        Let me know if you need more details!
-    """
-    )
+#     bot_response = dedent(
+#         f"""
+#         Here is what I found for "{query}"\n\nI've found {total_products} options for you. 
+#         Let me know if you need more details!
+#     """
+#     )
 
-    return JSONResponse(
-        content={
-            "products": products,
-            "totalProducts": total_products,
-            "botResponse": bot_response,
-        }
-    )
+#     return JSONResponse(
+#         content={
+#             "products": products,
+#             "totalProducts": total_products,
+#             "botResponse": bot_response,
+#         }
+#     )
 
 
 # Upload image endpoint
@@ -114,3 +116,6 @@ async def record_voice(audio: UploadFile = File(...)):
     with open(file_location, "wb") as file:
         file.write(await audio.read())
     return {"success": True, "message": "Voice recorded successfully"}
+
+
+app.include_router(search_router)

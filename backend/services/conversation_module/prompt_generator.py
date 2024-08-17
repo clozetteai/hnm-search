@@ -3,7 +3,7 @@ import json
 
 class PromptGenerator:
     def __init__(self, message_list, num_queries = 5) -> None:
-        self.message_list = [f"{message["role"]}: {message["content"]}" for message in message_list]
+        self.message_list = [f"{message['role']}: {message['content']}" for message in message_list]
         self.num_queries = num_queries
         
     def search_prompt(self):

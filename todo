@@ -1,0 +1,16 @@
+What all things are done?
+
+Anindya:
+1. TiDB 1000 data (with text and image embedding)
+2. search using embedding
+3. integration with API (wip)
+
+Pratyush
+1. text2sql (incomplete) | tidb: exectable
+2. conversation module (done) 
+3. speech to text (wip)
+
+Sidhant
+1. frontend enhance (wip)
+2. image upload (wip)
+3. handling voice (todo)
