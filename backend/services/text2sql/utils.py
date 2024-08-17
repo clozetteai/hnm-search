@@ -1,4 +1,7 @@
 import sqlite3
+import mysql.connector
+from mysql.connector import MySQLConnection
+from mysql.connector.cursor import MySQLCursor
 import csv
 import os
 
@@ -18,8 +21,6 @@ def csv_to_sqlite(csv_file_path, sqlite_db_path, table_name):
         columns = reader.fieldnames
         if not columns:
             raise ValueError("No columns found in the CSV file")
-        
-        # table_name = os.path.splitext(os.path.basename(csv_file_path))[0]
         
         create_table_query = f'''
             CREATE TABLE IF NOT EXISTS {table_name} (
@@ -41,25 +42,8 @@ def csv_to_sqlite(csv_file_path, sqlite_db_path, table_name):
     conn.close()
     print(f"Data from {csv_file_path} has been successfully saved to {sqlite_db_path}")
     
-def load_sqlite_db(sqlite_db_path):
-    conn = sqlite3.connect(sqlite_db_path)
+def get_tidb_cursor(config):
+    conn = mysql.connector.connect(**config)
     cursor = conn.cursor()
     
     return cursor
-
-def get_db_columns(cursor):
-
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    tables = cursor.fetchall()
-
-    db_schema = {}
-
-    for table_name in tables:
-        table_name = table_name[0]
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        columns = cursor.fetchall()
-
-        column_info = {col[1]: col[2] for col in columns}
-        db_schema[table_name] = column_info
-
-    return db_schema
