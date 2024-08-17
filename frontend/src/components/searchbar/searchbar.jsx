@@ -1,10 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { Image, Mic, X } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Image, Mic, Square, Play, X } from 'lucide-react';
 
 const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
   const [input, setInput] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const audioRef = useRef(new Audio());
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && input.trim() !== '') {
@@ -42,6 +49,63 @@ const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
 
   const handleDeleteImage = (index) => {
     setUploadedImages(prevImages => prevImages.filter((_, i) => i !== index));
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        setAudioBlob(audioBlob);
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setAudioBlob(null);
+    }
+  };
+
+  const playRecording = () => {
+    if (audioBlob) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+      audioRef.current.src = audioUrl;
+      audioRef.current.play();
+      setIsPlaying(true);
+      audioRef.current.onended = () => setIsPlaying(false);
+    }
+  };
+
+  const stopPlayback = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
   };
 
   return (
@@ -87,12 +151,36 @@ const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
           placeholder="Search products..."
           className="flex-grow mx-2 bg-transparent focus:outline-none"
         />
-        <button
-          onClick={onVoiceRecord}
-          className="text-gray-700 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-300"
-        >
-          <Mic size={24} />
-        </button>
+        {isRecording ? (
+          <button
+            onClick={stopRecording}
+            className="text-red-500 p-2 rounded-full hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300 transition-colors duration-300"
+          >
+            <Square size={24} />
+          </button>
+        ) : audioBlob ? (
+          <button
+            onClick={isPlaying ? stopPlayback : playRecording}
+            className="text-green-500 p-2 rounded-full hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-300 transition-colors duration-300"
+          >
+            {isPlaying ? <Square size={24} /> : <Play size={24} />}
+          </button>
+        ) : (
+          <button
+            onClick={startRecording}
+            className="text-gray-700 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-300"
+          >
+            <Mic size={24} />
+          </button>
+        )}
+        {isRecording && (
+          <button
+            onClick={cancelRecording}
+            className="ml-2 text-gray-500 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-300"
+          >
+            <X size={24} />
+          </button>
+        )}
       </div>
     </div>
   );

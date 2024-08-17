@@ -1,7 +1,9 @@
+import { API_ENDPOINT } from "./constant";
 
 export const ApiClient = {
   search: async (query, type, page = 1, limit = 10) => {
-    const response = await fetch(`http://localhost:8000/api/search?query=${query}&type=${type}&page=${page}&limit=${limit}`);
+    console.log(API_ENDPOINT)
+    const response = await fetch(`${API_ENDPOINT}/api/search?query=${query}&type=${type}&page=${page}&limit=${limit}`);
     if (!response.ok) throw new Error('Search failed');
     return response.json();
   },
@@ -9,7 +11,7 @@ export const ApiClient = {
     const formData = new FormData();
     formData.append('image', imageFile);
 
-    const response = await fetch('http://localhost:8000/api/upload-image', {
+    const response = await fetch(`${API_ENDPOINT}/api/upload-image`, {
       method: 'POST',
       body: formData,
     });
@@ -20,7 +22,7 @@ export const ApiClient = {
     const formData = new FormData();
     formData.append('audio', audioBlob);
 
-    const response = await fetch('http://localhost:8000/api/record-voice', {
+    const response = await fetch(`${API_ENDPOINT}/api/record-voice`, {
       method: 'POST',
       body: formData,
     });
