@@ -1,10 +1,10 @@
 import React from 'react';
-import AICompanySearch from './AICompanySearch';
+import { Chat } from './pages';
 
 function App() {
   return (
     <div className="App w-full h-screen">
-      <AICompanySearch />
+      <Chat />
     </div>
   );
 }
