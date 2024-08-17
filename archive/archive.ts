@@ -4,37 +4,28 @@ import Sidebar from './Sidebar';
 
 // API client (to be replaced with actual API calls)
 const apiClient = {
-  fetchCatalog: async (page = 1, limit = 10) => {
-    const response = await fetch(`http://localhost:8000/api/catalog?page=${page}&limit=${limit}`);
-    if (!response.ok) throw new Error('Failed to fetch catalog');
-    return response.json();
-  },
   search: async (query, type, page = 1, limit = 10) => {
-    const response = await fetch(`http://localhost:8000/api/search?query=${query}&type=${type}&page=${page}&limit=${limit}`);
-    if (!response.ok) throw new Error('Search failed');
-    return response.json();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const totalProducts = 100; // Simulating a large number of products
+    const products = Array.from({ length: limit }, (_, i) => ({
+      id: (page - 1) * limit + i + 1,
+      title: `Product ${(page - 1) * limit + i + 1}`,
+      price: (Math.random() * 100).toFixed(2),
+      imageUrl: `/api/placeholder/300/300?text=Product${(page - 1) * limit + i + 1}`,
+    }));
+    return {
+      products,
+      totalProducts,
+      botResponse: `Here is what I found for "${query}"\n\nI've found some great options for you. Let me know if you need more details!`,
+    };
   },
   uploadImage: async (imageFile) => {
-    const formData = new FormData();
-    formData.append('image', imageFile);
-
-    const response = await fetch('http://localhost:8000/api/upload-image', {
-      method: 'POST',
-      body: formData,
-    });
-    if (!response.ok) throw new Error('Image upload failed');
-    return response.json();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return { success: true, message: 'Image uploaded successfully' };
   },
   recordVoice: async (audioBlob) => {
-    const formData = new FormData();
-    formData.append('audio', audioBlob);
-
-    const response = await fetch('http://localhost:8000/api/record-voice', {
-      method: 'POST',
-      body: formData,
-    });
-    if (!response.ok) throw new Error('Voice record failed');
-    return response.json();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return { success: true, message: 'Voice recorded successfully' };
   },
 };
 
@@ -51,7 +42,6 @@ const ProductCard = React.memo(({ title, price, imageUrl }) => (
     </div>
   </div>
 ));
-
 
 const SearchBar = React.memo(({ onSearch, onImageUpload, onVoiceRecord }) => {
   const [input, setInput] = useState('');
@@ -109,23 +99,6 @@ const AICompanySearch = () => {
     if (node) observer.current.observe(node);
   }, [isLoading, hasMore]);
 
-  const fetchProducts = useCallback(async (newQuery = '', type = 'text', newPage = 1) => {
-    setIsLoading(true);
-    try {
-      const response = newQuery
-        ? await apiClient.search(newQuery, type, newPage)
-        : await apiClient.fetchCatalog(newPage);
-      setSearchResults(prevResults => (newPage === 1 ? response.products : [...prevResults, ...response.products]));
-      setBotResponse(response.botResponse);
-      setHasMore(response.products.length === 10);
-    } catch (error) {
-      console.error('Failed to fetch products:', error);
-      setBotResponse('Sorry, there was an error processing your request.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   const handleSearch = useCallback(async (newQuery, type) => {
     setIsLoading(true);
     setQuery(newQuery);
@@ -146,16 +119,6 @@ const AICompanySearch = () => {
   }, []);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    if (page > 1) {
-      fetchProducts(query, searchType, page);
-    }
-  }, [page, query, searchType, fetchProducts]);
-
-  useEffect(() => {
     if (page > 1) {
       const fetchMoreProducts = async () => {
         setIsLoading(true);
@@ -173,7 +136,6 @@ const AICompanySearch = () => {
     }
   }, [page, query, searchType]);
 
-
   const handleImageUpload = async () => {
     // Implementation remains the same
   };
@@ -181,6 +143,7 @@ const AICompanySearch = () => {
   const handleVoiceRecord = async () => {
     // Implementation remains the same
   };
+
 
   const [chatSessions, setChatSessions] = useState([
     { id: 1, title: "First Search" },
@@ -196,6 +159,8 @@ const AICompanySearch = () => {
     setBotResponse(`You've selected chat session ${sessionId}`);
   };
 
+
+
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar
@@ -207,7 +172,7 @@ const AICompanySearch = () => {
         <header className="bg-white p-4 shadow-md sticky top-0 z-10">
           <h1 className="text-2xl font-bold text-blue-600">Company.ai</h1>
         </header>
-
+        
         <main className="flex-grow overflow-auto p-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {searchResults.map((product, index) => (
@@ -222,7 +187,7 @@ const AICompanySearch = () => {
             </div>
           )}
         </main>
-
+        
         <footer className="bg-white p-4 pt-6 sticky bottom-0 z-10">
           <div className="bg-gray-100 rounded-t-3xl p-4 pb-8">
             {botResponse && (
@@ -231,7 +196,7 @@ const AICompanySearch = () => {
                 <p>{botResponse.split('\n\n')[1]}</p>
               </div>
             )}
-            <SearchBar
+            <SearchBar 
               onSearch={handleSearch}
               onImageUpload={handleImageUpload}
               onVoiceRecord={handleVoiceRecord}
@@ -242,5 +207,4 @@ const AICompanySearch = () => {
     </div>
   );
 };
-
 export default AICompanySearch;
