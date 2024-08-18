@@ -1,7 +1,20 @@
-import React from 'react';
-import { Search, PlusCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Sidebar = ({ chatSessions, onSelectSession, activeSession }) => {
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem('sidebarExpanded');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('sidebarExpanded', JSON.stringify(isExpanded));
+  }, [isExpanded]);
+
+  const toggleSidebar = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <aside className="flex font-poppins">
       {/* First Column */}
@@ -48,7 +61,7 @@ const Sidebar = ({ chatSessions, onSelectSession, activeSession }) => {
         </a>
         {/* settings */}
         <a
-          href="/"
+          href="/settings"
           className="rounded-lg p-1.5 text-slate-500 transition-colors duration-200 hover:bg-slate-200 focus:outline-none light:text-slate-400 light:hover:bg-slate-800"
         >
           <svg
@@ -68,58 +81,67 @@ const Sidebar = ({ chatSessions, onSelectSession, activeSession }) => {
             <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
           </svg>
         </a>
+        {/* Toggle sidebar button */}
+        <button
+          onClick={toggleSidebar}
+          className="mt-auto rounded-lg p-1.5 text-slate-500 transition-colors duration-200 hover:bg-slate-200 focus:outline-none light:text-slate-400 light:hover:bg-slate-800"
+        >
+          {isExpanded ? <ChevronLeft className="h-6 w-6" /> : <ChevronRight className="h-6 w-6" />}
+        </button>
       </div>
       {/* Second Column */}
-      <div className="h-screen w-52 overflow-y-auto bg-slate-50 py-8 light:bg-slate-900 sm:w-60">
-        <div className="flex items-start">
-          <h2 className="inline px-5 text-lg font-medium text-slate-800 light:text-slate-200">
-            Chats
-          </h2>
-          <span className="rounded-full bg-blue-600 px-2 py-1 text-xs text-slate-200">
-            {chatSessions.length}
-          </span>
-        </div>
+      {isExpanded && (
+        <div className="h-screen w-52 overflow-y-auto bg-slate-50 py-8 light:bg-slate-900 sm:w-60">
+          <div className="flex items-start">
+            <h2 className="inline px-5 text-lg font-medium text-slate-800 light:text-slate-200">
+              Chats
+            </h2>
+            <span className="rounded-full bg-blue-600 px-2 py-1 text-xs text-slate-200">
+              {chatSessions.length}
+            </span>
+          </div>
 
-        <div className="mx-2 mt-8 space-y-4">
-          <form>
-            <label htmlFor="search-chats" className="sr-only">Search chats</label>
-            <div className="relative">
-              <input
-                id="search-chats"
-                type="text"
-                className="w-full rounded-lg border border-slate-300 bg-slate-50 p-3 pr-10 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 light:border-slate-700 light:bg-slate-900 light:text-slate-200"
-                placeholder="Search chats"
-                required
-              />
+          <div className="mx-2 mt-8 space-y-4">
+            <form>
+              <label htmlFor="search-chats" className="sr-only">Search chats</label>
+              <div className="relative">
+                <input
+                  id="search-chats"
+                  type="text"
+                  className="w-full rounded-lg border border-slate-300 bg-slate-50 p-3 pr-10 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 light:border-slate-700 light:bg-slate-900 light:text-slate-200"
+                  placeholder="Search chats"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="absolute bottom-2 right-2.5 rounded-lg p-2 text-sm text-slate-500 hover:text-blue-700 focus:outline-none sm:text-base"
+                >
+                  <Search className="h-5 w-5" />
+                  <span className="sr-only">Search chats</span>
+                </button>
+              </div>
+            </form>
+
+            {chatSessions.map((session) => (
               <button
-                type="submit"
-                className="absolute bottom-2 right-2.5 rounded-lg p-2 text-sm text-slate-500 hover:text-blue-700 focus:outline-none sm:text-base"
+                key={session.id}
+                className={`flex w-full flex-col gap-y-2 rounded-lg px-3 py-2 text-left transition-colors duration-200 ${activeSession === session.id
+                  ? 'bg-slate-200 light:bg-slate-800'
+                  : 'hover:bg-slate-200 light:hover:bg-slate-800'
+                  } focus:outline-none`}
+                onClick={() => onSelectSession(session.id)}
               >
-                <Search className="h-5 w-5" />
-                <span className="sr-only">Search chats</span>
+                <h1 className="text-sm capitalize text-slate-700 light:text-slate-400">
+                  {session.title}
+                </h1>
+                <p className="text-xs text-slate-500 light:text-slate-400">
+                  {session.date}
+                </p>
               </button>
-            </div>
-          </form>
-
-          {chatSessions.map((session) => (
-            <button
-              key={session.id}
-              className={`flex w-full flex-col gap-y-2 rounded-lg px-3 py-2 text-left transition-colors duration-200 ${activeSession === session.id
-                ? 'bg-slate-200 light:bg-slate-800'
-                : 'hover:bg-slate-200 light:hover:bg-slate-800'
-                } focus:outline-none`}
-              onClick={() => onSelectSession(session.id)}
-            >
-              <h1 className="text-sm capitalize text-slate-700 light:text-slate-400">
-                {session.title}
-              </h1>
-              <p className="text-xs text-slate-500 light:text-slate-400">
-                {session.date}
-              </p>
-            </button>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </aside>
   );
 };
