@@ -3,8 +3,8 @@ import SearchBar from '../searchbar/searchbar';
 
 const Footer = ({ botResponse, setBotResponse, handleSearch, handleImageUpload, handleVoiceRecord }) => {
   return (
-    <footer className="bg-white p-4 pt-6 sticky bottom-0 z-10">
-      <div className="bg-gray-100 rounded-t-3xl p-4 pb-8">
+    <footer className=" p-4 pt-6 sticky bottom-0 z-10">
+      <div className=" rounded-t-3xl p-4 pb-8">
         {botResponse && (
           <div className="bg-white p-4 rounded-lg mb-4 shadow-md">
             <p className="font-semibold">{botResponse.split('\n\n')[0]}</p>
