@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Poppins';
+    font-style: light;
+    font-weight: 400;
+  }
+}
