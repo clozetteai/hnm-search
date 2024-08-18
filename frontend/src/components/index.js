@@ -5,3 +5,7 @@ export { default as ProductCard } from './productcard/productcard';
 export { default as Sidebar } from './sidebar/sidebar';
 export { default as PromptCard } from './promptcard/promptcard';
 export { default as PricingCard } from './pricingcard/pricingcard';
+export { default as Faq } from './faq/faq';
+export { default as ProductFeatures } from './productfeature/productfeature';
+export { default as GetInTouch } from './contact/contact';
+export { default as OurTeam } from './team/team';

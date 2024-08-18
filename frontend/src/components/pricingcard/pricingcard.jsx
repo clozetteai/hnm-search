@@ -115,7 +115,7 @@ const PricingCard = () => {
                     /{isYearly ? 'year' : 'month'}
                   </span>
                 </p>
-                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-700 light:text-slate-400">
+                <ul className="mt-8 space-y-3 text-sm leading-6 text-slate-700 light:text-slate-400">
                   {tier.features.map((feature, index) => (
                     <li key={index} className="flex gap-x-3">
                       <svg
@@ -138,7 +138,7 @@ const PricingCard = () => {
                 </ul>
               </div>
               <a
-                href="#"
+                href="/"
                 aria-describedby={`tier-${tier.id}`}
                 className={`mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 ${
                   tier.isPopular
