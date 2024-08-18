@@ -1,6 +1,6 @@
 import React from 'react';
 import { Chat } from './pages';
-import { Routes, Route } from 'react-router-dom';
+// import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (

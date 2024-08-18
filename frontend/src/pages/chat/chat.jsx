@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Loader } from 'lucide-react';
-import { Footer, ProductCard, Sidebar } from '../../components';
+import { Header ,Footer, ProductCard, Sidebar, PromptCard } from '../../components';
 import { ApiClient as apiClient }from '../../api/api';
 
 
@@ -84,6 +84,10 @@ const Chat = () => {
     setBotResponse(`You've selected chat session ${sessionId}`);
   };
 
+  const handlePromptCardClick = (prompt) => {
+    handleSearch(prompt, 'text');
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar
@@ -92,18 +96,22 @@ const Chat = () => {
         activeSession={activeSession}
       />
       <div className="flex flex-col flex-grow">
-        <header className="bg-white p-4 shadow-md sticky top-0 z-10">
-          <h1 className="text-2xl font-bold text-blue-600">Company.ai</h1>
-        </header>
-        
+        <Header />
+
         <main className="flex-grow overflow-auto p-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {searchResults.map((product, index) => (
-              <div key={product.id} ref={index === searchResults.length - 1 ? lastProductElementRef : null}>
-                <ProductCard {...product} />
-              </div>
-            ))}
-          </div>
+          {searchResults.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {searchResults.map((product, index) => (
+                <div key={product.id} ref={index === searchResults.length - 1 ? lastProductElementRef : null}>
+                  <ProductCard {...product} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex-grow mt-[15rem] flex items-center justify-center">
+              <PromptCard handlePromptCardClick={handlePromptCardClick} />
+            </div>
+          )}
           {isLoading && (
             <div className="flex justify-center items-center p-4">
               <Loader className="animate-spin text-blue-500" size={48} />
