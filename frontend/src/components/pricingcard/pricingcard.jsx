@@ -65,7 +65,7 @@ const PricingCard = () => {
             Pricing Plans
           </h2>
           {/* Toggle */}
-          <div className="mt-16 flex justify-center">
+          <div className="mt-16 flex justify-center" id='pricing'>
             <div className="rounded-full border border-slate-300 p-1 light:border-slate-300/20">
               <div className="flex text-xs font-semibold leading-5">
                 <button 
