@@ -1,0 +1,11 @@
+langchain
+fastapi
+uvicorn
+PyMySQL
+premai
+tidb-vector
+mysql-connector-python
+SQLAlchemy
+python-dotenv
+requests
+pydantic

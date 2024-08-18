@@ -9,3 +9,14 @@
 - [Siddhant Prateek Mahanayak](https://github.com/siddhantprateek)
 - [Anindyadeep](https://github.com/Anindyadeep)
 - [Pratyush Patnaik](https://github.com/Pratyush-exe)
+
+
+# Setting up the backend
+
+To set up the backend you need to first create an environment
+and install the requirements file. 
+
+```
+cd backend
+pip install -r requirements.txt
+```
