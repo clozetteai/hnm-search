@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  ui:
+    # image: siddhantprateek/clozette-ai:ui-0.1.0
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      - REACT_APP_API_ENDPOINT=http://localhost:8000
+    ports:
+      - "8090:80"
+
+  api: 
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      - MINIO_BUCKET_NAME
+      - MINIO_HOST
+      - MINIO_ACCESS_KEY
+      - MINIO_SECRET_KEY
+      - DATABASE_URL
+    ports:
+      - "7865:8000"
