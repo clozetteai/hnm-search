@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Loader } from 'lucide-react';
-import { Header ,Footer, ProductCard, Sidebar, PromptCard } from '../../components';
+import { 
+  Header,
+  Footer, 
+  ProductCard, 
+  Sidebar, 
+  PromptCard 
+} from '../../components';
 import { ApiClient as apiClient }from '../../api/api';
 
 
