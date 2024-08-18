@@ -21,6 +21,8 @@ cd backend
 pip install -r requirements.txt
 ```
 
+**NOTE**: You should gather all the credentials show in `backend/.env.template` and create a `.env` file in the `backend` directory. 
+
 Download all the assets from this [google drive link](https://drive.google.com/file/d/1OW_y8LNPishXXNOetkHR3ATC6rCm8R1u/view?usp=sharing) and place them in the `backend/assets` folder. After this paste this inside the `backend/assets` folder. Now unzip it inside the folder and you can delete the zip file.
 
 
