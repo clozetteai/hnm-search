@@ -45,7 +45,7 @@ const SearchBar = React.memo(({ onSearch, setBotResponse, onImageUpload, onVoice
       const data = await response.json();
       setBotResponse(data.botResponse);
 
-      // text search
+      // text search or (send the input: prompt)
       onSearch(data.botResponse);
     } catch (error) {
       console.error('Error during search:', error);
