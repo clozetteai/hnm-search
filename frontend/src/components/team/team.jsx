@@ -29,7 +29,7 @@ const TeamMember = ({ name, title, imageSrc, x, github }) => (
 
 const OurTeam = () => {
   const teamMembers = [
-    { name: "Siddhant Prateek", title: "CEO", imageSrc: "https://avatars.githubusercontent.com/u/43869046?v=4", x: "https://x.com/siddhantprateek", github: "https://github.com/siddhantprateek" },
+    { name: "Siddhant Prateek", title: "Software Engineer (Infra)", imageSrc: "https://avatars.githubusercontent.com/u/43869046?v=4", x: "https://x.com/siddhantprateek", github: "https://github.com/siddhantprateek" },
     { name: "Anindyadeep Sanigrahi", title: "Data Scientist", imageSrc: "https://avatars.githubusercontent.com/u/58508471?v=4", x: "https://x.com/AnindyadeepS", github: "https://github.com/Anindyadeep" },
     { name: "Pratyush Patnaik", title: "ML Engineer", imageSrc: "https://avatars.githubusercontent.com/u/78687109?v=4", x: "", github: "https://github.com/Pratyush-exe" },
   ];
