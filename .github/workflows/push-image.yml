@@ -29,7 +29,7 @@ jobs:
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v5
       with:
-        context: ./frontend
+        context: .
         file: ./frontend/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/clozette-ai:${{ github.event.inputs.tag }}
