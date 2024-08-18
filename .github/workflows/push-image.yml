@@ -31,7 +31,7 @@ jobs:
         context: ./frontend
         file: ./frontend/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/clozette-ai:ui-${{ github.sha }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/clozette-ai:${{ github.event.inputs.tag }}
 
     - name: Log out from Docker Hub
       run: docker logout
