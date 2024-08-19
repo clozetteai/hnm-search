@@ -1,3 +1,5 @@
+# Author: Anidyadeep Sanigrahi https://github.com/Anindyadeep
+
 import json
 import mysql.connector
 from textwrap import dedent

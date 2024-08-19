@@ -1,3 +1,5 @@
+# Author: Anidyadeep Sanigrahi https://github.com/Anindyadeep
+
 from typing import Optional, List, Dict, Any
 from dotenv import load_dotenv, find_dotenv
 from pydantic import BaseModel

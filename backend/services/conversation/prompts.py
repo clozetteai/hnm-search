@@ -1,3 +1,5 @@
+# Author: Anidyadeep Sanigrahi https://github.com/Anindyadeep
+
 import json
 
 CONVERSATION_SYSTEM_PROMPT = """

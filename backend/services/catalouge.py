@@ -1,3 +1,5 @@
+# Author: Anidyadeep Sanigrahi https://github.com/Anindyadeep
+
 import json
 from fastapi import Query
 from typing import Any

@@ -1,3 +1,5 @@
+# Author: Anidyadeep Sanigrahi https://github.com/Anindyadeep
+
 from typing import Optional
 from dotenv import load_dotenv, find_dotenv
 import concurrent.futures

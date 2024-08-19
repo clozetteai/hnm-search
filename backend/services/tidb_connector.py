@@ -1,3 +1,5 @@
+# Author: Anidyadeep Sanigrahi https://github.com/Anindyadeep
+
 import mysql.connector
 from dotenv import load_dotenv, find_dotenv
 from config import TiDBConfig

@@ -25,3 +25,14 @@ bun.lockb
 __pycache__
 
 /data
+
+
+.venv
+*__pycache__
+__pycache__/
+
+/backend/assets
+
+archive
+backend/assets/*.zip
+backend/assets/*.jpg
