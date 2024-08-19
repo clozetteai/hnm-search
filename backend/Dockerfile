@@ -19,6 +19,6 @@ WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /app /app
 
-EXPOSE 8000
+EXPOSE 7600
 
-CMD ["fastapi", "dev", "main.py"]
+CMD ["uvicorn", "main:app", "--reload", "--port", "7600"]

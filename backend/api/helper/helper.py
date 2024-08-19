@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from constants.constants import SECRET_KEY, ALGORITHM
 from passlib.context import CryptContext
 from models.user import User
-from dto.user import SubscriptionType
-
+from dto.subscriptions import SubscriptionType
+import hashlib, os
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -61,3 +61,15 @@ def calculate_subscription_end_date(plan_type: SubscriptionType) -> datetime:
         return now + timedelta(days=365)
     else:
         raise ValueError("Invalid plan type")
+    
+def hash_password(password: str) -> str:
+    salt = os.urandom(32)
+    # Use SHA256 for hashing
+    hashed = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+    return salt.hex() + hashed.hex()
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    salt = bytes.fromhex(hashed_password[:64])
+    stored_password = hashed_password[64:]
+    pwdhash = hashlib.pbkdf2_hmac('sha256', plain_password.encode('utf-8'), salt, 100000)
+    return pwdhash.hex() == stored_password

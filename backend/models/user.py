@@ -1,10 +1,12 @@
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Text, JSON, Enum
 from datetime import datetime
-from connectors.db.postgresql import engine
 from connectors.db.postgresql import Base
 from sqlalchemy.orm import relationship
-from dto.user import SubscriptionType
+# from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Enum
+# from datetime import datetime
+
+
 
 class User(Base):
     __tablename__ = "users"
@@ -15,6 +17,8 @@ class User(Base):
     password_hash = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
     last_login = Column(DateTime)
+    
+    subscription = relationship("Subscription", back_populates="user", uselist=False)
 
 class UserSettings(Base):
     __tablename__ = "user_settings"
@@ -93,17 +97,6 @@ class APIKey(Base):
     last_used = Column(DateTime)
     is_active = Column(Boolean, default=True)
     
-class Subscription(Base):
-    __tablename__ = "subscriptions"
-
-    subscription_id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), unique=True)
-    plan_type = Column(Enum(SubscriptionType))
-    start_date = Column(DateTime, default=datetime.utcnow)
-    end_date = Column(DateTime)
-    is_active = Column(Boolean, default=True)
-    user = relationship("User", back_populates="subscription")
+    
 
 
-# Create tables
-Base.metadata.create_all(bind=engine)
