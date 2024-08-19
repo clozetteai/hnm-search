@@ -77,3 +77,4 @@ class Settings:
     image_search_limit: int = 50
     text_search_limit: int = 50
     text2sql_num_tries: int = 3
+    rerank_result_limit: int = 50

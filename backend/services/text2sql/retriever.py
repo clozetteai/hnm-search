@@ -49,14 +49,10 @@ class Text2SQLCandidateGenerator:
         )
         return response.choices[0].message.content
 
-    def convert(self, queries):
-        queries = queries if type(queries) == list else [queries]
-        result = []
-        for query in queries:
-            llm_prompt = self.prompt(query)
-            generated_output = self.call_llm(llm_prompt)
-            result.append(json.loads(generated_output))
-        return [r["sql_prompt"] for r in result]
+    def convert(self, query):
+        llm_prompt = self.prompt(query)
+        generated_output = self.call_llm(llm_prompt)
+        return json.loads(generated_output)
 
     def execute_query(self, query):
         errors_list = []
@@ -105,18 +101,4 @@ class Text2SQLCandidateGenerator:
                 else:
                     print(f"Attempt {attempt + 1} failed: {e}. No more retries.")
 
-        return {
-            "results": result if result else [], 
-            "errors_list": errors_list
-        }
-    
-    def execute_query_list(self, queries):
-        results = set()
-        for query in queries:
-            try:
-                result = self.execute_query(query)["results"]
-                for row in result:
-                    results.add(row)
-            except Exception as error:
-                print(error)
-        return list(results)
+        return result, errors_list
