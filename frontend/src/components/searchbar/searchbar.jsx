@@ -38,7 +38,8 @@ const SearchBar = React.memo(({ onSearch, setBotResponse, onImageUpload, onVoice
     });
 
     try {
-      const response = await fetch(`${API_ENDPOINT}/api/search/image`, {
+      
+      const response = await fetch(`${API_ENDPOINT}/api/search-by-image`, {
         method: 'POST',
         body: formData,
       });

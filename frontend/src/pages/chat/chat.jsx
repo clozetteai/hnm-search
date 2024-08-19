@@ -39,9 +39,10 @@ const Chat = () => {
     setSearchResults([]);
     try {
       const response = await apiClient.search(newQuery, type);
-      setSearchResults(response.products);
-      setBotResponse(response.botResponse);
-      setHasMore(response.products.length === 10);
+      console.log(response)
+      setSearchResults(response);
+      // setBotResponse(response.botResponse);
+      // setHasMore(response.products.length === 10);
     } catch (error) {
       console.error('Search failed:', error);
       setBotResponse('Sorry, there was an error processing your request.');

@@ -3,7 +3,8 @@ import { API_ENDPOINT } from "./constant";
 export const ApiClient = {
   search: async (query, type, page = 1, limit = 10) => {
     console.log(API_ENDPOINT)
-    const response = await fetch(`${API_ENDPOINT}/api/search?query=${query}&type=${type}&page=${page}&limit=${limit}`);
+    // TODO ENDPOINT NEED TO BE CHANGED /api/search
+    const response = await fetch(`${API_ENDPOINT}/api/catalouge`);
     if (!response.ok) throw new Error('Search failed');
     return response.json();
   },
