@@ -3,7 +3,7 @@ from dotenv import load_dotenv, find_dotenv
 import concurrent.futures
 from premai import Prem
 import json
-from services.conversation.prompts import PromptGenerator, CONVERSATION_SYSTEM_PROMPT
+from services.conversation.prompts import *
 from config import LLMConfig
 
 load_dotenv(find_dotenv())
@@ -20,29 +20,39 @@ class ConversationModule:
         self.history_length = history_length * 2
         self.client = Prem(api_key=self.llm_config.api_key)
         self.message_list = []
+        self.search_queries = []
         self.system_prompt = CONVERSATION_SYSTEM_PROMPT
         self.num_customer_queries = num_customer_queries
 
-    def _generate_converse_output(self):
+    def _generate_converse_output(self, chat_intent: bool):
         pg = PromptGenerator(self.message_list, num_queries=self.num_customer_queries)
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_bot_output = executor.submit(self.call_llm, pg.output_prompt())
-            future_search_query = executor.submit(self.call_llm, pg.search_prompt())
-
+            
+            if not chat_intent:
+                future_search_query = executor.submit(self.call_llm, pg.search_prompt())
+                self.search_queries = json.loads(
+                    future_search_query.result()["message"]["content"]
+                )
+            print(self.search_queries if not chat_intent else [])
             return {
                 "bot_output": json.loads(
                     future_bot_output.result()["message"]["content"]
                 ),
-                "search_query": json.loads(
-                    future_search_query.result()["message"]["content"]
-                ),
+                "search_query": self.search_queries if not chat_intent else [],
             }
+            
+    def intent_classifier(self, query):
+        output = self.call_llm(get_intent_prompt(query))
+        return json.loads(output['message']['content'])
 
     def reset(self):
         self.message_list = []
 
     def converse(self, message: str):
         self.message_list.append({"role": "user", "content": message})
+        chat_intent = self.intent_classifier(message)
+        print(chat_intent)
 
         llm_output = self.call_llm(self.message_list)
         self.message_list.append(
@@ -54,7 +64,7 @@ class ConversationModule:
         return {
             "message_list": self.message_list,
             "conversation_ended": False,
-            "outputs": self._generate_converse_output(),
+            "outputs": self._generate_converse_output(chat_intent['chat']),
         }
 
     def call_llm(self, messages):
