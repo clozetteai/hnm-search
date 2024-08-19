@@ -84,7 +84,8 @@ from services.text2sql.retriever import Text2SQLCandidateGenerator
 
 t2s = Text2SQLCandidateGenerator()
 sql_query = t2s.convert("show me some red tops")
-result, error_list = t2s.execute_query(sql_query["sql_prompt"])
+print(sql_query)
+result = t2s.execute_query_list(sql_query)
 # print the json format of result with some indent
 import json
 print(json.dumps(result, indent=4))
