@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from models.user import User
-from dto.user import UserCreate
+from dto.user import UserCreate, ChangePasswordRequest
 from api.helper.helper import create_access_token, get_current_user, hash_password, verify_password, get_db
 from fastapi.security import OAuth2PasswordRequestForm
 from constants.constants import ACCESS_TOKEN_EXPIRE_MINUTES
@@ -63,3 +63,26 @@ async def delete_user_account(background_tasks: BackgroundTasks, current_user: U
     db.commit()
     background_tasks.add_task(cleanup_user_data, current_user.user_id)
     return {"message": "User account deactivated. Cleanup tasks scheduled."}
+
+@router.post("/users/change-password", status_code=status.HTTP_200_OK)
+async def change_password(
+    password_change: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # Verify the current password
+    if not verify_password(password_change.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+    
+    # Check if the new password matches the confirmation
+    if password_change.new_password != password_change.confirm_new_password:
+        raise HTTPException(status_code=400, detail="New passwords do not match")
+    
+    # Hash the new password
+    new_password_hash = hash_password(password_change.new_password)
+    
+    # Update the user's password
+    current_user.password_hash = new_password_hash
+    db.commit()
+    
+    return {"message": "Password changed successfully"}
