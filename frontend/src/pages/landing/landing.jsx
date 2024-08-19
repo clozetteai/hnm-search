@@ -1,32 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { APPLOGO } from '../../assets';
 import { Faq, GetInTouch, OurTeam, PricingCard, ProductFeatures } from '../../components';
+import { useNavigate } from 'react-router-dom';
 
-const Header = () => (
-  <header className="py-4 px-6">
-    <div className="container mx-auto flex items-center justify-between">
-      <div className="flex items-center">
-        <img src={APPLOGO} className='h-10' alt="" />
-        <span className="text-2xl font-medium text-gray-800">Clozette.AI</span>
+const Header = () => {
+  const navigate = useNavigate();
+  const [loadingButton, setLoadingButton] = useState(null);
+
+  const handleNav = (path, buttonType) => {
+    setLoadingButton(buttonType);
+    setTimeout(() => {
+      setLoadingButton(null);
+      navigate(path);
+    }, 1000); // 1 second delay, adjust as needed
+  };
+
+  return (
+    <header className="py-4 px-6">
+      <div className="container mx-auto flex items-center justify-between">
+        <div className="flex items-center">
+          <img src={APPLOGO} className="h-10" alt="" />
+          <span className="text-2xl font-medium text-gray-800">Clozette.AI</span>
+        </div>
+        <nav>
+          <ul className="flex space-x-20">
+            <li><a href="#services" className="text-gray-600 hover:text-gray-800">Services</a></li>
+            <li><a href="#pricing" className="text-gray-600 hover:text-gray-800">Pricing</a></li>
+            <li><a href="#about" className="text-gray-600 hover:text-gray-800">About us</a></li>
+          </ul>
+        </nav>
+        <div className="">
+          <button 
+            onClick={() => handleNav("chat", "login")} 
+            className="text-violet-500 px-4 py-2 border-2 rounded-md border-violet-500 hover:bg-violet-50 transition duration-300"
+            disabled={loadingButton === "login"}
+          >
+            {loadingButton === "login" ? 'Loading...' : 'Log In'}
+          </button>
+          <button 
+            onClick={() => handleNav("chat", "start")}  
+            className="ml-5 bg-violet-500 text-white px-4 py-2 rounded-md hover:bg-orange-500 transition duration-300"
+            disabled={loadingButton === "start"}
+          >
+            {loadingButton === "start" ? 'Loading...' : 'Start for Free'}
+          </button>
+        </div>
       </div>
-      <nav>
-        <ul className="flex space-x-20">
-          <li><a href="#services" className="text-gray-600 hover:text-gray-800">Services</a></li>
-          <li><a href="#pricing" className="text-gray-600 hover:text-gray-800">Pricing</a></li>
-          <li><a href="#about" className="text-gray-600 hover:text-gray-800">About us</a></li>
-        </ul>
-      </nav>
-      <div className=''>
-        <button className="text-violet-500 px-4 py-2 border-2 rounded-md border-violet-500 hover:bg-violet-50 transition duration-300">
-          Log In.
-        </button>
-        <button className="ml-5 bg-violet-500 text-white px-4 py-2 rounded-md hover:bg-orange-500 transition duration-300">
-          Start for Free.
-        </button>
-      </div>
-    </div>
-  </header>
-)
+      {loadingButton && (
+        <div className="fixed top-0 left-0 w-full h-1 bg-violet-200">
+          <div className="h-full bg-violet-500 animate-pulse" style={{width: '50%'}}></div>
+        </div>
+      )}
+    </header>
+  );
+};
 
 const Hero = () => {
   return (
@@ -43,7 +70,7 @@ const Hero = () => {
         </h1>
 
         <p className='mx-auto w-[50rem] mt-10 text-xl text-gray-500'>
-          The future of fashion search is here. With Clozette.AI, 
+          The future of fashion search is here. With Clozette.AI,
           your natural language descriptions become powerful SQL queries, unlocking a world of clothing possibilities.
         </p>
       </div>
