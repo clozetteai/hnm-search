@@ -38,9 +38,10 @@ const Chat = () => {
     setPage(1);
     setSearchResults([]);
     try {
+      console.log(newQuery)
       const response = await apiClient.search(newQuery, type);
       console.log(response)
-      setSearchResults(response);
+      // setSearchResults(response);
       // setBotResponse(response.botResponse);
       // setHasMore(response.products.length === 10);
     } catch (error) {

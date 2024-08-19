@@ -44,10 +44,12 @@ const SearchBar = React.memo(({ onSearch, setBotResponse, onImageUpload, onVoice
         body: formData,
       });
       const data = await response.json();
-      setBotResponse(data.botResponse);
+      console.log("/api/search-by-image: ", data)
+      // setBotResponse(data.botResponse);
 
+      console.log("this is the input: 1", input)
       // text search or (send the input: prompt)
-      onSearch(data.botResponse);
+      onSearch(input);
     } catch (error) {
       console.error('Error during search:', error);
     }
