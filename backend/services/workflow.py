@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from services.conversation.conversation import ConversationModule
 from services.text2sql.retriever import Text2SQLCandidateGenerator
 from services.search import EmbeddingSearchService
+from services.reranker import Reranker
 from services.catalouge import get_default_catalog
 from services.tidb_connector import connect_to_tidb
 from config import LLMConfig, TiDBConfig, Settings
@@ -37,6 +38,10 @@ class WorkFlow:
         )
 
         self.search = EmbeddingSearchService(tidb_config=tidb_config)
+        self.reranker = Reranker(
+            tidb_config=tidb_config, 
+            reranker_result_limit=self.settings.rerank_result_limit
+        )
 
         self.text2sql = Text2SQLCandidateGenerator(
             llm_config=llm_config, tidb_config=tidb_config
@@ -106,5 +111,8 @@ class WorkFlow:
         return OutputSchema(
             bot_message=final_output_response,
             is_catalouge_changed=is_catalouge_changed,
-            catalouge=self.catalouge_state,
+            catalouge=self.reranker.rerank(
+                self.catalouge_state,
+                text_search_queries
+            ),
         )

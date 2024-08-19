@@ -80,11 +80,21 @@
 # print(len(result["catalouge"]))
 
 
-from services.text2sql.retriever import Text2SQLCandidateGenerator
+# from services.text2sql.retriever import Text2SQLCandidateGenerator
 
-t2s = Text2SQLCandidateGenerator()
-sql_query = t2s.convert("show me some red tops")
-result, error_list = t2s.execute_query(sql_query["sql_prompt"])
-# print the json format of result with some indent
-import json
-print(json.dumps(result, indent=4))
+# t2s = Text2SQLCandidateGenerator()
+# sql_query = t2s.convert("show me some red tops")
+# print(sql_query)
+# result = t2s.execute_query_list(sql_query)
+# # print the json format of result with some indent
+# import json
+# print(json.dumps(result, indent=4))
+
+from services.workflow import WorkFlow
+
+w = WorkFlow()
+
+while True:
+    result = w.run({"customer_message": input("Enter input: ")})
+    print(w.message_list[-1]["content"])
+    print(result.catalouge[:10])

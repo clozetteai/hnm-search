@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
 ASSET_PATH = Path(os.getcwd()) / "assets"
 ALL_ASSETS = [
@@ -77,3 +77,4 @@ class Settings:
     image_search_limit: int = 50
     text_search_limit: int = 50
     text2sql_num_tries: int = 3
+    rerank_result_limit: int = 50

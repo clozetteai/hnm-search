@@ -3,3 +3,5 @@ backend/assets/*.zip
 backend/assets/*.jpg
 backend/__pycache__/
 frontend/node_modules/
+*/.env
+**/__pycache__/
