@@ -81,7 +81,7 @@ const Hero = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="flex mt-[10rem] mb-[20rem] justify-center"
+      className="flex mt-[16rem] mb-[20rem] justify-center"
     >
       <div className="text-center">
         <motion.div
@@ -90,7 +90,7 @@ const Hero = () => {
           transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 20 }}
           className="mb-8"
         >
-          <img src={APPLOGO400} className='h-[10rem] mx-auto' alt='' />
+          {/* <img src={APPLOGO400} className='h-[10rem] mx-auto' alt='' /> */}
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -194,7 +194,7 @@ const HeroPopOvers = () => {
     <div className="relative mt-16">
 
       <motion.div
-        className="absolute top-[11rem] left-[20rem] w-[15rem] bg-amber-200 p-6 rounded-lg shadow-lg"
+        className="absolute top-[5rem] left-[20.5rem] w-[15rem] bg-amber-200 p-6 rounded-lg shadow-lg"
         whileHover={{ scale: 1.05 }}
         initial={{ opacity: 0, x: -100 }}
         animate={{ opacity: 1, x: 0 }}
@@ -205,7 +205,7 @@ const HeroPopOvers = () => {
       </motion.div>
 
       <motion.div
-        className="absolute top-[31rem] left-[28rem] w-[15rem] bg-sky-300 p-6 rounded-lg shadow-lg"
+        className="absolute top-[28rem] left-[28rem] w-[15rem] bg-sky-300 p-6 rounded-lg shadow-lg"
         whileHover={{ scale: 1.05 }}
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
@@ -216,7 +216,7 @@ const HeroPopOvers = () => {
       </motion.div>
 
       <motion.div
-        className="absolute top-[10rem] right-[15rem] w-[15rem] bg-green-300 p-6 rounded-lg shadow-lg"
+        className="absolute top-[8rem] right-[12rem] w-[15rem] bg-green-300 p-6 rounded-lg shadow-lg"
         whileHover={{ scale: 1.05 }}
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
