@@ -7,10 +7,11 @@ import {
   Sidebar, 
   PromptCard 
 } from '../../components';
-import { ApiClient as apiClient }from '../../api/api';
-
+import { ApiClient as apiClient } from '../../api/api';
+import { useAuth } from '../../contexts/auth';
 
 const Chat = () => {
+  const { user } = useAuth();
   const [searchResults, setSearchResults] = useState([]);
   const [botResponse, setBotResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +20,9 @@ const Chat = () => {
   const observer = useRef();
   const [query, setQuery] = useState('');
   const [searchType, setSearchType] = useState('text');
+  const [chatSessions, setChatSessions] = useState([]);
+  const [activeSession, setActiveSession] = useState(null);
+  const [sessionMessages, setSessionMessages] = useState([]);
 
   const lastProductElementRef = useCallback(node => {
     if (isLoading) return;
@@ -70,30 +74,72 @@ const Chat = () => {
     }
   }, [page, query, searchType]);
 
-  const handleImageUpload = async () => {
-    // Implementation remains the same
+  useEffect(() => {
+    const fetchChatSessions = async () => {
+      if (user && user.token) {
+        try {
+          const sessions = await apiClient.listChatSessions(user.token);
+          console.log(sessions)
+          setChatSessions(sessions);
+          if (sessions.length > 0) {
+            setActiveSession(sessions[0].session_id);
+          }
+        } catch (error) {
+          console.error('Failed to fetch chat sessions:', error);
+        }
+      }
+    };
+    fetchChatSessions();
+  }, [user]);
+
+  const handleImageUpload = async (imageFile) => {
+    try {
+      const response = await apiClient.uploadImage(imageFile);
+      // Handle the response
+    } catch (error) {
+      console.error('Image upload failed:', error);
+    }
   };
 
-  const handleVoiceRecord = async () => {
-    // Implementation remains the same
+  const handleVoiceRecord = async (audioBlob) => {
+    try {
+      const response = await apiClient.recordVoice(audioBlob);
+      // Handle the response
+    } catch (error) {
+      console.error('Voice record failed:', error);
+    }
   };
-  // setChatSessions
-  const [chatSessions, setChatSessions] = useState([
-    { id: 1, title: "First Search" },
-    { id: 2, title: "Product Inquiry" },
-    { id: 3, title: "Size Comparison" },
-  ]);
-  const [activeSession, setActiveSession] = useState(1);
 
-  const handleSelectSession = (sessionId) => {
+  const handleSelectSession = async (sessionId) => {
     setActiveSession(sessionId);
-    // Here you would typically load the chat history for the selected session
-    // For now, we'll just update the botResponse
-    setBotResponse(`You've selected chat session ${sessionId}`);
+    if (user && user.token) {
+      try {
+        const messages = await apiClient.listMessages(user.token, sessionId);
+        setSessionMessages(messages);
+        if (messages.length > 0) {
+          setBotResponse(messages[messages.length - 1].content);
+        }
+      } catch (error) {
+        console.error('Failed to fetch session messages:', error);
+        setBotResponse('Failed to load chat history.');
+      }
+    }
   };
 
   const handlePromptCardClick = (prompt) => {
     handleSearch(prompt, 'text');
+  };
+
+  const createNewChatSession = async (title) => {
+    if (user && user.token) {
+      try {
+        const newSession = await apiClient.createChatSession(user.token, title);
+        setChatSessions(prevSessions => [...prevSessions, newSession]);
+        setActiveSession(newSession.session_id);
+      } catch (error) {
+        console.error('Failed to create new chat session:', error);
+      }
+    }
   };
 
   return (
@@ -102,12 +148,21 @@ const Chat = () => {
         chatSessions={chatSessions}
         onSelectSession={handleSelectSession}
         activeSession={activeSession}
+        onCreateNewSession={createNewChatSession}
       />
       <div className="flex flex-col flex-grow">
         <Header />
 
         <main className="flex-grow overflow-auto p-4">
-          {searchResults.length > 0 ? (
+          {sessionMessages.length > 0 ? (
+            <div className="space-y-4">
+              {sessionMessages.map((message) => (
+                <div key={message.message_id} className={`p-2 rounded ${message.message_type === 'user' ? 'bg-blue-100' : 'bg-green-100'}`}>
+                  {message.content}
+                </div>
+              ))}
+            </div>
+          ) : searchResults.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {searchResults.map((product, index) => (
                 <div key={product.id} ref={index === searchResults.length - 1 ? lastProductElementRef : null}>

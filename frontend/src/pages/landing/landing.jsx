@@ -2,19 +2,29 @@ import React, { useState } from 'react';
 import { APPLOGO } from '../../assets';
 import { Faq, GetInTouch, OurTeam, PricingCard, ProductFeatures } from '../../components';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth';
+import { ApiClient } from '../../api/api';
 
 const Header = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [loadingButton, setLoadingButton] = useState(null);
+  const [error, setError] = useState(null);
 
-  const handleNav = (path, buttonType) => {
+  const handleNav = async (path, buttonType) => {
     setLoadingButton(buttonType);
-    setTimeout(() => {
+    setError(null);
+    try {
+      login("newuser5", "password123");
+      setTimeout(() => {
+        setLoadingButton(null);
+        navigate(path);
+      }, 1000); // 1 second delay, adjust as needed
+    } catch (err) {
+      setError(err.message || 'An error occurred during login');
       setLoadingButton(null);
-      navigate(path);
-    }, 1000); // 1 second delay, adjust as needed
+    }
   };
-
   return (
     <header className="py-4 px-6">
       <div className="container mx-auto flex items-center justify-between">
@@ -49,6 +59,11 @@ const Header = () => {
       {loadingButton && (
         <div className="fixed top-0 left-0 w-full h-1 bg-violet-200">
           <div className="h-full bg-violet-500 animate-pulse" style={{width: '50%'}}></div>
+        </div>
+      )}
+      {error && (
+        <div className="fixed top-16 left-0 w-full bg-red-500 text-white p-2 text-center">
+          {error}
         </div>
       )}
     </header>

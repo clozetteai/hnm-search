@@ -7,34 +7,47 @@ import { useNavigate } from "react-router-dom";
 const Setting = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [botResponse, setBotResponse] = useState('');
-  const [chatSessions, setChatSessions] = useState([
-    { id: 1, title: "First Search" },
-    { id: 2, title: "Product Inquiry" },
-    { id: 3, title: "Size Comparison" },
-  ]);
+  const [chatSessions, setChatSessions] = useState([]);
   const [activeSession, setActiveSession] = useState(1);
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  
-  // setSubscription({ "plan_type": "pro", "start_date": new Date(), "end_date": new Date(new Date().setDate(new Date().getDate() + 30))})
+
   const [subscription, setSubscription] = useState(null);
   const [showPlanSelection, setShowPlanSelection] = useState(false);
-  
+
+  // New state for password change
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  // New state for account deletion confirmation
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
 
   useEffect(() => {
-    // if (!loading && !user) {
-    //   navigate("/login");
-    // } else if (user) {
-    //   fetchSubscription();
-    // }
+    if (!loading && !user) {
+      navigate("/login");
+    } else if (user) {
+      fetchSubscription();
+    }
   }, [user, loading, navigate]);
 
   const fetchSubscription = async () => {
     try {
-      const response = await apiClient.get('/subscriptions/current');
-      setSubscription(response.data);
+      const response = await apiClient.getCurrentSubscription(user.token);
+      setSubscription(response);
     } catch (error) {
       console.error('Error fetching subscription:', error);
+    }
+  };
+
+  const fetchChatSessions = async () => {
+    try {
+      const sessions = await apiClient.listChatSessions(user.token);
+      setChatSessions(sessions);
+    } catch (error) {
+      console.error('Error fetching chat sessions:', error);
     }
   };
 
@@ -50,49 +63,61 @@ const Setting = () => {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    // Implement password change logic here
-  };
+    setPasswordError('');
+    console.log("Password: ", currentPassword, newPassword, confirmPassword)
+    if (newPassword !== confirmPassword) {
+      setPasswordError("New passwords don't match");
+      return;
+    }
 
-  const handleSubscribe = async (planType) => {
-    // Implement subscription logic here
-  };
-
-  const handleCancelSubscription = async () => {
-    // Implement subscription cancellation logic here
+    try {
+      await apiClient.changePassword(user.token, currentPassword, newPassword, confirmPassword);
+      alert('Password changed successfully');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      setPasswordError(error.message);
+    }
   };
 
   const handleDeleteAccount = async () => {
-    // Implement account deletion logic here
+    setShowDeleteConfirmation(true);
   };
 
+  const confirmDeleteAccount = async () => {
+    try {
+      await apiClient.deleteUserAccount(user.token);
+      logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account. Please try again.');
+    }
+  };
 
   const handleUpdatePlan = () => {
     setShowPlanSelection(true);
   };
 
   const handlePlanChange = async (planType) => {
-    // Implement plan change logic here
     console.log(`Updating plan to ${planType}`);
-    // After successful update, you might want to fetch the updated subscription
-    // fetchSubscription();
     setShowPlanSelection(false);
   };
 
   const handleCancelPlan = async () => {
-    // Implement plan cancellation logic here
     console.log('Cancelling plan');
     setSubscription(null);
   };
 
-
   //TODO Uncomment after authentication is ready
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  // if (!user) {
-  //   return null;
-  // }
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className='flex h-screen bg-gray-100'>
@@ -100,10 +125,11 @@ const Setting = () => {
         chatSessions={chatSessions}
         onSelectSession={handleSelectSession}
         activeSession={activeSession}
+        isSettingsPage={true}
       />
       <div className="flex flex-col flex-grow p-10 overflow-auto">
         <h1 className="text-3xl font-bold mb-6">Settings</h1>
-        
+
         {/* Profile and Password Tabs */}
         <div className="rounded-lg overflow-hidden mb-8">
           <div className="flex border-b">
@@ -167,6 +193,8 @@ const Setting = () => {
                     id="currentPassword"
                     type="password"
                     placeholder="Current Password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
                   />
                 </div>
                 <div className="mb-4">
@@ -178,6 +206,8 @@ const Setting = () => {
                     id="newPassword"
                     type="password"
                     placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
                   />
                 </div>
                 <div className="mb-6">
@@ -189,8 +219,11 @@ const Setting = () => {
                     id="confirmPassword"
                     type="password"
                     placeholder="Confirm New Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                 </div>
+                {passwordError && <p className="text-red-500 mb-4">{passwordError}</p>}
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   type="submit"
@@ -201,11 +234,11 @@ const Setting = () => {
             )}
           </div>
         </div>
-        
+
         {/* Subscription Section */}
         <div className="rounded-lg p-6 mb-8 shadow">
           <h2 className="text-2xl font-bold mb-4">Subscription</h2>
-          
+
           {subscription ? (
             <div>
               <p className="mb-2">Current Plan: {subscription.plan_type}</p>
@@ -256,7 +289,7 @@ const Setting = () => {
             </div>
           )}
         </div>
-        
+
         {/* Danger Zone */}
         <div className="shadow-md rounded-lg p-6">
           <h2 className="text-xl font-bold mb-4 text-red-600">Danger Zone</h2>
@@ -268,6 +301,30 @@ const Setting = () => {
             Delete Account
           </button>
         </div>
+
+        {/* Delete Account Confirmation Modal */}
+        {showDeleteConfirmation && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-gray-100">
+              <h3 className="text-lg font-bold mb-4">Confirm Account Deletion</h3>
+              <p className="mb-4">Are you sure you want to delete your account? This action cannot be undone.</p>
+              <div className="flex justify-end">
+                <button
+                  className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"
+                  onClick={() => setShowDeleteConfirmation(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={confirmDeleteAccount}
+                >
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

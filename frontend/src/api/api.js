@@ -2,25 +2,27 @@ import { API_ENDPOINT } from "./constant";
 
 export const ApiClient = {
   // Helper function
-  callApi: async (endpoint, method = 'GET', body = null, token = null) => {
+  callApi: async (endpoint, method = 'GET', body = null, token = null, isFormData = false) => {
     const headers = {
-      'Content-Type': 'application/json',
+      'Content-Type': isFormData ? 'application/x-www-form-urlencoded' : 'application/json',
     };
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
     const config = { method, headers };
     if (body) {
-      config.body = JSON.stringify(body);
+      config.body = isFormData ? new URLSearchParams(body).toString() : JSON.stringify(body);
     }
     const response = await fetch(`${API_ENDPOINT}${endpoint}`, config);
-    if (!response.ok) throw new Error(`API call failed: ${response.statusText}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || `API call failed: ${response.statusText}`);
+    }
     return response.json();
   },
-
   // User Management
   createUser: (userData) => ApiClient.callApi('/api/users/', 'POST', userData),
-  login: (username, password) => ApiClient.callApi('/api/login', 'POST', { username, password }),
+  login: (username, password) => ApiClient.callApi('/api/login', 'POST', { username, password }, null, true),
   getCurrentUser: (token) => ApiClient.callApi('/api/users/me', 'GET', null, token),
   updateUserSettings: (token, settings) => ApiClient.callApi('/api/users/settings', 'PUT', settings, token),
   deleteUserAccount: (token) => ApiClient.callApi('/users/me', 'DELETE', null, token),
