@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { ApiClient } from '../api/api'; // Update this path
+import Cookies from 'js-cookie';
 
 const AuthContext = createContext(null);
 
@@ -13,23 +15,14 @@ export const AuthProvider = ({ children }) => {
 
   const checkUserLoggedIn = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = Cookies.get('token');
       if (token) {
-        const response = await fetch('/api/users/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          setUser({ ...userData, token });
-        } else {
-          // If the token is invalid, remove it
-          localStorage.removeItem('token');
-        }
+        const userData = await ApiClient.getCurrentUser(token);
+        setUser({ ...userData, token });
       }
     } catch (error) {
       console.error('Error checking user login status:', error);
+      Cookies.remove('token');
     } finally {
       setLoading(false);
     }
@@ -37,25 +30,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await fetch('/api/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          'username': username,
-          'password': password,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.access_token);
+      const data = await ApiClient.login(username, password);
+      console.log(data)
+      if (data.access_token) {
+        Cookies.set('token', data.access_token);
         await checkUserLoggedIn(); // This will set the user state
         return true;
       } else {
-        const errorData = await response.json();
-        throw new Error(errorData.detail);
+        throw new Error('Login failed: No access token received');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -64,12 +46,34 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    Cookies.remove('token');
     setUser(null);
   };
 
-  const updateUser = (userData) => {
-    setUser(prevUser => ({ ...prevUser, ...userData }));
+  const updateUser = async (settings) => {
+    try {
+      const token = Cookies.get('token');
+      if (token) {
+        const updatedUserData = await ApiClient.updateUserSettings(token, settings);
+        setUser(prevUser => ({ ...prevUser, ...updatedUserData }));
+      }
+    } catch (error) {
+      console.error('Error updating user settings:', error);
+      throw error;
+    }
+  };
+
+  const changePassword = async (currentPassword, newPassword, confirmNewPassword) => {
+    try {
+      const token = Cookies.get('token');
+      if (token) {
+        await ApiClient.changePassword(token, currentPassword, newPassword, confirmNewPassword);
+        return true;
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      throw error;
+    }
   };
 
   const value = {
@@ -78,6 +82,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateUser,
+    changePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
