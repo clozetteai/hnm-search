@@ -37,7 +37,7 @@ const ProductFeatures = () => {
   return (
     <div className="px-4 mb-20" id='services'>
       <div className="max-w-5xl  mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-2">How <span className='text-violet-500'>Clozette.AI</span> Empowers Your Fashion Business</h2>
+        <h2 className="text-4xl font-bold text-center mb-2">How <span className='text-violet-600 bg-orange-200 px-4 py-1 rounded-2xl text-indigo-400'>Clozette.AI</span> Empowers Your Fashion Business</h2>
         <p className="text-center text-gray-600 mb-8">Our platform helps you stay ahead in the fast-paced world of fashion retail.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {features.map((feature, index) => (

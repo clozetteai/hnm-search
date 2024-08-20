@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { APPLOGO } from '../../assets';
+import { APPLOGO, APPLOGO400 } from '../../assets';
 import { Faq, GetInTouch, OurTeam, PricingCard, ProductFeatures } from '../../components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/auth';
 import { ApiClient } from '../../api/api';
+import { motion } from 'framer-motion';
 
 const Header = () => {
   const { login } = useAuth();
@@ -40,25 +41,29 @@ const Header = () => {
           </ul>
         </nav>
         <div className="">
-          <button 
-            onClick={() => handleNav("chat", "login")} 
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleNav("chat", "login")}
             className="text-violet-500 px-4 py-2 border-2 rounded-md border-violet-500 hover:bg-violet-50 transition duration-300"
             disabled={loadingButton === "login"}
           >
             {loadingButton === "login" ? 'Loading...' : 'Log In'}
-          </button>
-          <button 
-            onClick={() => handleNav("chat", "start")}  
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleNav("chat", "start")}
             className="ml-5 bg-violet-500 text-white px-4 py-2 rounded-md hover:bg-orange-500 transition duration-300"
             disabled={loadingButton === "start"}
           >
             {loadingButton === "start" ? 'Loading...' : 'Start for Free'}
-          </button>
+          </motion.button>
         </div>
       </div>
       {loadingButton && (
         <div className="fixed top-0 left-0 w-full h-1 bg-violet-200">
-          <div className="h-full bg-violet-500 animate-pulse" style={{width: '50%'}}></div>
+          <div className="h-full bg-violet-500 animate-pulse" style={{ width: '50%' }}></div>
         </div>
       )}
       {error && (
@@ -72,28 +77,50 @@ const Header = () => {
 
 const Hero = () => {
   return (
-    <div className="flex mt-[10rem] mb-[20rem] justify-center">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="flex mt-[10rem] mb-[20rem] justify-center"
+    >
       <div className="text-center">
-        <div className="mb-8">
-          <img src={APPLOGO} className='h-[10rem] mx-auto' alt='' />
-        </div>
-        <h1 className="text-2xl md:text-5xl font-bold mb-4">
-          We speak <span className="text-purple-600">SQL</span>,
-        </h1>
-        <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold">
-          so you can speak <span className='text-red-500'>Fashion.</span>
-        </h1>
-
-        <p className='mx-auto w-[50rem] mt-10 text-xl text-gray-500'>
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 20 }}
+          className="mb-8"
+        >
+          <img src={APPLOGO400} className='h-[10rem] mx-auto' alt='' />
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+          className="text-2xl md:text-5xl font-bold mb-4"
+        >
+          We speak <span className="bg-blue-200 px-2 py-1 rounded-2xl text-indigo-500">SQL</span>,
+        </motion.h1>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.5 }}
+          className="text-2xl md:text-4xl lg:text-5xl font-bold"
+        >
+          so you can speak <span className='bg-orange-200 px-2 py-1 rounded-2xl text-red-400'>Fashion.</span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 0.5 }}
+          className='mx-auto w-[50rem] mt-10 text-xl text-gray-500'
+        >
           The future of fashion search is here. With Clozette.AI,
           your natural language descriptions become powerful SQL queries, unlocking a world of clothing possibilities.
-        </p>
+        </motion.p>
       </div>
-    </div>
+    </motion.div>
   );
 };
-
-
 const Footer = () => (
   <footer className="py-12 px-6 mt-16">
     <div className="container mx-auto">
@@ -166,27 +193,53 @@ const Landing = () => {
   return (
     <div className='min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-orange-100'>
       <Header />
-      {/* Hero container */}
       <Hero />
 
-      {/* Product Feature */}
-      <ProductFeatures />
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+      >
+        <ProductFeatures />
+      </motion.div>
 
-      {/* Pricing Plans */}
-      <PricingCard />
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+      >
+        <PricingCard />
+      </motion.div>
 
-      {/* Contact */}
-      <GetInTouch />
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+      >
+        <GetInTouch />
+      </motion.div>
 
-      {/* Our Team */}
-      <OurTeam />
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+      >
+        <OurTeam />
+      </motion.div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+      >
+        <Faq />
+      </motion.div>
 
-      {/* FAQs */}
-      <Faq />
-
-
-      {/* Footer */}
       <Footer />
     </div>
   )
