@@ -58,14 +58,14 @@ const PricingCard = () => {
   const pricingTiers = isYearly ? yearlyPricingTiers : monthlyPricingTiers;
 
   return (
-    <div className="py-4 light:bg-slate-900">
+    <div className="py-4 light:bg-slate-900" id='pricing'>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 light:text-slate-200 sm:text-5xl">
             Pricing Plans
           </h2>
           {/* Toggle */}
-          <div className="mt-16 flex justify-center" id='pricing'>
+          <div className="mt-16 flex justify-center">
             <div className="rounded-full border border-slate-300 p-1 light:border-slate-300/20">
               <div className="flex text-xs font-semibold leading-5">
                 <button 
