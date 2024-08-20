@@ -2,7 +2,7 @@ import React from 'react';
 import { FEATURE2 } from '../../assets';
 
 const FeatureCard = ({ title, description, icon }) => (
-  <div className="bg-slate-100 rounded-lg shadow-md p-6">
+  <div className="bg-slate-100 rounded-2xl border-2 border-purple-300 p-6">
     <img src={FEATURE2} alt="" />
     <div className="flex justify-center mb-4"></div>
     <h3 className="text-xl font-semibold mb-2">{icon} {title}</h3>
@@ -39,7 +39,7 @@ const ProductFeatures = () => {
       <div className="max-w-5xl  mx-auto">
         <h2 className="text-4xl font-bold text-center mb-2">How <span className='text-violet-600 bg-orange-200 px-4 py-1 rounded-2xl text-indigo-400'>Clozette.AI</span> Empowers Your Fashion Business</h2>
         <p className="text-center text-gray-600 mb-8">Our platform helps you stay ahead in the fast-paced world of fashion retail.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {features.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
           ))}
