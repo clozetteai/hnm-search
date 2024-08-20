@@ -189,12 +189,59 @@ const Footer = () => (
   </footer>
 )
 
+const HeroPopOvers = () => {
+  return (
+    <div className="relative mt-16">
+
+      <motion.div
+        className="absolute top-[11rem] left-[20rem] w-[15rem] bg-amber-300 p-6 rounded-lg shadow-lg"
+        whileHover={{ scale: 1.05 }}
+        initial={{ opacity: 0, x: -100 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <h3 className="text-lg font-semibold mb-2">🏆 Rewards from brands you love</h3>
+        <p>Discover and earn with your favorite fashion brands.</p>
+      </motion.div>
+
+      <motion.div
+        className="absolute top-[31rem] left-[28rem] w-[15rem] bg-sky-300 p-6 rounded-lg shadow-lg"
+        whileHover={{ scale: 1.05 }}
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <h3 className="text-lg font-semibold mb-2">🦾 Smart Search Technology</h3>
+        <p>Our AI understands your style preferences.</p>
+      </motion.div>
+
+      <motion.div
+        className="absolute top-[10rem] right-[15rem] w-[15rem] bg-green-300 p-6 rounded-lg shadow-lg"
+        whileHover={{ scale: 1.05 }}
+        initial={{ opacity: 0, x: 100 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        <h3 className="text-lg font-semibold mb-2">🧥 We take your fashion seriously</h3>
+        <p>Curated results that match your unique style.</p>
+      </motion.div>
+    </div>
+  )
+}
+
+
 const Landing = () => {
   return (
     <div className='min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-orange-100'>
+      {/* Header */}
       <Header />
+      {/* Hero Section */}
+      <HeroPopOvers />
       <Hero />
 
+      {/* Hero Section ENDED*/}
+
+      {/* Product Feature */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -204,6 +251,7 @@ const Landing = () => {
         <ProductFeatures />
       </motion.div>
 
+      {/* Pricing Plans */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -213,6 +261,7 @@ const Landing = () => {
         <PricingCard />
       </motion.div>
 
+      {/* Get in Touch */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -222,6 +271,7 @@ const Landing = () => {
         <GetInTouch />
       </motion.div>
 
+      {/* Our Team */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -231,6 +281,7 @@ const Landing = () => {
         <OurTeam />
       </motion.div>
 
+      {/* FAQs */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -245,4 +296,4 @@ const Landing = () => {
   )
 }
 
-export default Landing
+export default Landing;
