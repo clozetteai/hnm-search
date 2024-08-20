@@ -194,7 +194,7 @@ const HeroPopOvers = () => {
     <div className="relative mt-16">
 
       <motion.div
-        className="absolute top-[11rem] left-[20rem] w-[15rem] bg-amber-300 p-6 rounded-lg shadow-lg"
+        className="absolute top-[11rem] left-[20rem] w-[15rem] bg-amber-200 p-6 rounded-lg shadow-lg"
         whileHover={{ scale: 1.05 }}
         initial={{ opacity: 0, x: -100 }}
         animate={{ opacity: 1, x: 0 }}
