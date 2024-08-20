@@ -1,0 +1,82 @@
+version: '3'
+
+services:
+  pd0:
+    image: pingcap/pd:nightly
+    ports:
+      - "2379"
+    volumes:
+      - ./data/tidb/config/pd-nightly-tiflash.toml:/pd.toml:ro
+      - ./data/tidb/data:/data
+      - ./data/tidb/logs:/logs
+    command:
+      - --name=pd0
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd0:2379
+      - --advertise-peer-urls=http://pd0:2380
+      - --initial-cluster=pd0=http://pd0:2380
+      - --data-dir=/data/pd
+      - --config=/pd.toml
+      - --log-file=/logs/pd.log
+    restart: on-failure
+  tikv:
+    image: pingcap/tikv:nightly
+    volumes:
+      - ./data/tidb/data:/data
+      - ./data/tidb/logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv:20160
+      - --status-addr=tikv:20180
+      - --data-dir=/data/tikv
+      - --pd=pd0:2379
+      - --log-file=/logs/tikv.log
+    depends_on:
+      - "pd0"
+    restart: on-failure
+  tidb:
+    image: pingcap/tidb:nightly
+    ports:
+      - "4000:4000"
+      - "10080:10080"
+    volumes:
+      - ./data/tidb/logs:/logs
+      - ./init-script.sh:/docker-entrypoint-initdb.d/init-script.sh
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysecretpass
+    command:
+      - --status=10080
+      - --advertise-address=tidb
+      - --store=tikv
+      - --path=pd0:2379
+      - --log-file=/logs/tidb.log
+    depends_on:
+      - "tikv"
+    restart: on-failure
+  tiflash:
+   image: pingcap/tiflash:nightly
+   volumes:
+     - ./data/tidb/config/tiflash-nightly.toml:/tiflash.toml:ro
+     - ./data/tidb/config/tiflash-learner-nightly.toml:/tiflash-learner.toml:ro
+     - ./data/tidb/data:/data
+     - ./data/tidb/logs:/logs
+   command:
+     - --config=/tiflash.toml
+   depends_on:
+     - "tikv"
+     - "tidb"
+   restart: on-failure
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_HOST=tidb
+      - PMA_PORT=4000
+      - PMA_USER=root
+      - PMA_PASSWORD=mypass
+      - MYSQL_USERNAME=root
+      - MYSQL_ROOT_PASSWORD=mypass
+    ports:
+      - 24581:80
