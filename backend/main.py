@@ -9,7 +9,7 @@ from typing import List
 from connectors.s3.minio import minio_client
 from minio.error import S3Error
 from datetime import timedelta
-
+import logging 
 
 from dto.search import SearchPayload, SearchResponse
 from services.workflow import WorkFlow
@@ -35,6 +35,13 @@ app.add_middleware(
 )
 
 global workflow
+logging.basicConfig(
+    level=logging.DEBUG, 
+    # filename='logs/app.log', 
+    # filemode='a', 
+    format='%(levelname)s:     %(message)s'
+)
+
 
 # CONFIG TO BE REMOVE ###
 current_dir = os.path.dirname(os.path.abspath(__file__))

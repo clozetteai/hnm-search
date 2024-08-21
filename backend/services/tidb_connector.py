@@ -1,59 +1,50 @@
-# Author: Anidyadeep Sanigrahi https://github.com/Anindyadeep
+import logging
+from sqlalchemy import create_engine, Column, Integer, Text, LargeBinary
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import ProgrammingError
+from constants.constants import (
+    TIDB_HOST,
+    TIDB_PORT,
+    TIDB_USERNAME,
+    TIDB_PASSWORD,
+    TIDB_DB_NAME,
+    TIDB_TABLE_NAME
+)
 
-import mysql.connector
-from dotenv import load_dotenv, find_dotenv
-from config import TiDBConfig
-from sqlalchemy.orm import declarative_base, Session
-from tidb_vector.sqlalchemy import VectorType
-from sqlalchemy import Column, Integer, String, Text, create_engine, URL
-from config import TiDBConfig
+logger = logging.getLogger(__name__)
 
-load_dotenv(find_dotenv())
-
-
-def connect_to_tidb(tidb_config: TiDBConfig):
-    database = mysql.connector.connect(
-        **{
-            "host": tidb_config.host,
-            "port": tidb_config.port,
-            "user": tidb_config.user,
-            "password": tidb_config.password,
-            "database": tidb_config.db_name,
-            "autocommit": tidb_config.autocommit,
-            "use_pure": tidb_config.use_pure,
-        }
-    )
-    return database
-
+class TiDBConfig:
+    def __init__(self):
+        self.host = TIDB_HOST
+        self.port = TIDB_PORT
+        self.user = TIDB_USERNAME
+        self.password = TIDB_PASSWORD
+        self.db_name = TIDB_DB_NAME
+        self.table_name = TIDB_TABLE_NAME
+        self.autocommit = True
+        self.use_pure = True
+        self.text_embedding_dim = 768 
+        self.image_embedding_dim = 512
 
 def connect_to_tidb_engine(tidb_config: TiDBConfig = TiDBConfig()):
     Base = declarative_base()
 
     class HandMProductEntity(Base):
-        __tablename__ = "product"
+        __tablename__ = tidb_config.table_name
 
         article_id = Column(Integer, primary_key=True)
-
         prod_name = Column(Text)
         product_type_name = Column(Text)
         product_group_name = Column(Text)
-
         department_name = Column(Text)
         index_name = Column(Text)
         section_name = Column(Text)
-
         detail_desc = Column(Text)
-
         graphical_appearance_name = Column(Text)
         colour_group_name = Column(Text)
         perceived_colour_value_name = Column(Text)
-
-        text_embedding = Column(
-            VectorType(dim=tidb_config.text_embedding_dim), comment="hnsw(distance=l2)"
-        )
-        image_embedding = Column(
-            VectorType(dim=tidb_config.image_embedding_dim), comment="hnsw(distance=l2)"
-        )
+        text_embedding = Column(LargeBinary)  # Changed from VectorType to LargeBinary
+        image_embedding = Column(LargeBinary)  # Changed from VectorType to LargeBinary
 
         def to_json(self):
             return {
@@ -69,16 +60,15 @@ def connect_to_tidb_engine(tidb_config: TiDBConfig = TiDBConfig()):
                 "colour_group_name": self.colour_group_name,
                 "perceived_colour_value_name": self.perceived_colour_value_name,
             }
+            
+    connection_url = f"mysql+pymysql://{tidb_config.user}:{tidb_config.password}@{tidb_config.host}:{tidb_config.port}/{tidb_config.db_name}"
+    engine = create_engine(connection_url, pool_recycle=300)
+    
+    try:
+        Base.metadata.create_all(engine)
+        logger.info(f"Table '{tidb_config.table_name}' created successfully or already exists.")
+        # print()
+    except ProgrammingError as e:
+        logger.error(f"Error creating table: {e}")
 
-    url = URL(
-        drivername="mysql+pymysql",
-        username=tidb_config.user,
-        password=tidb_config.password,
-        host=tidb_config.host,
-        port=int(tidb_config.port),
-        database=tidb_config.db_name,
-        query={"ssl_verify_cert": True, "ssl_verify_identity": True},
-    )
-
-    engine = create_engine(url, pool_recycle=300)
     return engine, HandMProductEntity
