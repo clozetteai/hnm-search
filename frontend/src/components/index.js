@@ -1,0 +1,11 @@
+export { default as Header } from './header/header';
+export { default as Footer } from './footer/footer';
+export { default as SearchBar } from './searchbar/searchbar';
+export { default as ProductCard } from './productcard/productcard';
+export { default as Sidebar } from './sidebar/sidebar';
+export { default as PromptCard } from './promptcard/promptcard';
+export { default as PricingCard } from './pricingcard/pricingcard';
+export { default as Faq } from './faq/faq';
+export { default as ProductFeatures } from './productfeature/productfeature';
+export { default as GetInTouch } from './contact/contact';
+export { default as OurTeam } from './team/team';
