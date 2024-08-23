@@ -54,9 +54,9 @@ class WorkFlow:
 
         self.message_list = self.conversation_module.message_list
 
-    def run(self, payload: dict) -> OutputSchema:
-        customer_message = payload.get("customer_message")
-        attached_image = payload.get("attached_image")
+    def run(self, filepath, customer_message) -> OutputSchema:
+        # customer_message = payload.get("customer_message")
+        # attached_image = payload.get("attached_image")
         response_from_image, response_from_text = [], []
         final_output_response = "Here is what I found ..."
         is_catalouge_changed = False
@@ -90,9 +90,10 @@ class WorkFlow:
                 if self.catalouge_state != response_from_text:
                     is_catalouge_changed = True
 
-        if attached_image:
-            response_from_image = self.search.perform_image_search_from_bs64(
-                image_bs64=attached_image, limit=self.settings.image_search_limit
+        if filepath:
+            response_from_image = self.search.perform_image_search_from_file(
+                filepath=filepath,
+                limit=self.settings.image_search_limit
             )["results"]
 
             is_catalouge_changed = True

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
@@ -6,6 +6,7 @@ from services.workflow import WorkFlow
 from config import LLMConfig, TiDBConfig, Settings
 from config import ASSET_PATH
 from utils import image_to_base64
+import os
 
 app = FastAPI()
 app.add_middleware(
@@ -43,18 +44,27 @@ async def shutdown_event():
         del workflow
 
 @app.post("/api/search", response_model=SearchResponse)
-async def search(payload: SearchPayload):
-    try:
-        result = workflow.run(payload.dict())
+async def search(
+    customer_message: str = Form(...),
+    file: UploadFile = File(None)
+):
+    if file.content_type != "image/jpeg":
+        raise HTTPException(status_code=400, detail="Invalid file format. Only .jpg files are allowed.")
 
-        # Add images to each item in the catalogue result
-        for item in result.catalouge:
-            image_path = ASSET_PATH / f"0{item['article_id']}.jpg"
-            if image_path.exists():
-                image_base64 = image_to_base64(image_path)
-            else:
-                image_base64 = None
-            item["image"] = image_base64
+    try:
+        if file:
+            filepath = os.path.join(os.getcwd(), file.filename)
+        else: 
+            filepath = None
+        result = workflow.run(filepath, customer_message)
+        
+        # not required as it can be fetch in front-end itself via article_id
+        # for item in result.catalouge:
+        #     image_path = ASSET_PATH / f"0{item['article_id']}.jpg"
+        #     if image_path.exists():
+        #         image_base64 = image_to_base64(image_path)
+        #     else:
+        #         image_base64 = None
 
         return SearchResponse(
             bot_message=result.bot_message,
