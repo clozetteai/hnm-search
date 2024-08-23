@@ -1,13 +1,12 @@
 import json
-import mysql.connector
 from textwrap import dedent
-from premai import Prem
 from typing import Optional
-from services.text2sql.prompts import Text2SQLPrompts
-from config import LLMConfig, TiDBConfig
 
-from dotenv import load_dotenv, find_dotenv
-from config import TABLE_COLUMNS, Settings
+import mysql.connector
+from config import TABLE_COLUMNS, LLMConfig, Settings, TiDBConfig
+from dotenv import find_dotenv, load_dotenv
+from premai import Prem
+from services.text2sql.prompts import Text2SQLPrompts
 
 load_dotenv(find_dotenv())
 

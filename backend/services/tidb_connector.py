@@ -1,10 +1,9 @@
 import mysql.connector
-from dotenv import load_dotenv, find_dotenv
 from config import TiDBConfig
-from sqlalchemy.orm import declarative_base, Session
+from dotenv import find_dotenv, load_dotenv
+from sqlalchemy import URL, Column, Integer, String, Text, create_engine
+from sqlalchemy.orm import Session, declarative_base
 from tidb_vector.sqlalchemy import VectorType
-from sqlalchemy import Column, Integer, String, Text, create_engine, URL
-from config import TiDBConfig
 
 load_dotenv(find_dotenv())
 

@@ -1,9 +1,8 @@
 import json
-from fastapi import Query
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 
 from config import TABLE_COLUMNS
+from fastapi import Query
 
 # Right now we having random catalouge but it should have business
 # logic embedded when showing some default catalouge
@@ -29,6 +28,25 @@ LIMIT
   {limit};
 """
 
+fetch_article_info_sql_statement = """
+SELECT
+  article_id,
+  prod_name,
+  product_type_name,
+  product_group_name,
+  department_name,
+  index_name,
+  section_name,
+  detail_desc,
+  graphical_appearance_name,
+  colour_group_name,
+  perceived_colour_value_name
+FROM
+  product
+WHERE
+  article_id = {article_id};
+"""
+
 
 def get_default_catalog(
     database: Any,
@@ -40,15 +58,11 @@ def get_default_catalog(
     return [dict(zip(TABLE_COLUMNS, result)) for result in results]
 
 
-# catalouge = []
-# for result in results:
-#     result = dict(zip(TABLE_COLUMNS, result))
-#     image_path = ASSET_PATH / f"0{result['article_id']}.jpg"
-
-#     if image_path.exists():
-#         image_base64 = image_to_base64(image_path)
-#     else:
-#         image_base64 = None
-#     result["image"] = image_base64
-#     catalouge.append(result)
-# return  json.dumps(catalouge)
+def get_article_info(
+    database: Any,
+    article_id: int,
+):
+    cursor = database.cursor()
+    cursor.execute(fetch_article_info_sql_statement.format(article_id=article_id))
+    result = cursor.fetchone()
+    return dict(zip(TABLE_COLUMNS, result))

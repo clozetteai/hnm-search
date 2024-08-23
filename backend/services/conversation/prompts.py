@@ -20,19 +20,23 @@ Converse with the user, if they want to.
 ]
 """
 
-def get_intent_prompt(query): 
-    return f"""
+
+def get_intent_prompt(query):
+    return (
+        f"""
 # TASK: Classify weather the user wants to chat, or has some probably query about clothing recommendations based on USER MESSAGE.
 output is a json for python sor use either True or False only
 
 # USER MESSAGE: {query}
 
-""" + """
+"""
+        + """
 # OUTPUT FORMAT:
 {
-    "chat": boolean // True or False based on if user wants to chat or not
+    "chat": 'true' or 'false'
 }
 """
+    )
 
 
 class PromptGenerator:

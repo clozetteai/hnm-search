@@ -90,11 +90,32 @@
 # import json
 # print(json.dumps(result, indent=4))
 
-from services.workflow import WorkFlow
+# from services.workflow import WorkFlow
 
-w = WorkFlow()
+# w = WorkFlow()
 
-while True:
-    result = w.run({"customer_message": input("Enter input: ")})
-    print(w.message_list[-1]["content"])
-    print(result.catalouge[:10])
+# while True:
+#     result = w.run({"customer_message": input("Enter input: ")})
+#     print(w.message_list[-1]["content"])
+#     print(result.catalouge[:10])
+
+
+import clip
+import torch
+from services.search import EmbeddingSearchService
+
+search = EmbeddingSearchService()
+
+
+def get_text_embedding(text):
+    text_input = clip.tokenize([text]).to("cuda")
+    with torch.no_grad():
+        text_features = search.image_embedding_model.encode_text(text_input)
+    text_embedding = text_features / text_features.norm(dim=-1, keepdim=True)
+
+    return text_embedding.cpu().numpy()
+
+
+results = get_text_embedding("hello world")
+
+print(results.shape)

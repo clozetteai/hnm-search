@@ -44,6 +44,7 @@ class Text2SQLPrompts:
         perceived_colour_value_name'
         3. With 'WHERE' clause conditions, NEVER use 'AND', always use 'OR', and make sure conditions are 
         not case-sensitive, so make them LOWER before comparing.
+        4. Always put a limit of 100. So whatever you fetch always limit it to 100.
 
         """
             + f"""
@@ -67,7 +68,8 @@ class Text2SQLPrompts:
             {"column_name": "colour_group_name", "datatype": "object", unique_values: ["Dark Blue","Other Pink","Turquoise","Other Yellow","Yellow","Dark Green","Dark Orange","White","Other Red","Other Orange","Dark Red","Light Pink","Other","Dark Beige","Orange","Light Green","Red","Light Orange","Blue","Black","Off White","Silver","Green","Yellowish Brown","Dark Purple","Dark Pink","Dark Yellow","Light Beige","Light Turquoise","Pink","Greenish Khaki","Grey","Greyish Beige","Purple","Light Red","Transparent","Light Grey","Light Blue","Beige","Light Yellow","Dark Grey","Gold"]},
             {"column_name": "perceived_colour_value_name", "datatype": "object", unique_values: ["Undefined","Light","Medium","Dark","Medium Dusty","Bright","Dusty Light"]}
         ]
-        """+ f"""
+        """
+            + f"""
 
         ### EXAMPLE ROWS FROM THE TABLE:
         {sampled_rows}

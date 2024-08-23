@@ -5,3 +5,4 @@ backend/__pycache__/
 frontend/node_modules/
 */.env
 **/__pycache__/
+backend/services/__pycache__/*

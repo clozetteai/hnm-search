@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv, find_dotenv
+
+from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 
@@ -38,7 +39,7 @@ class TiDBConfig:
     autocommit = True
     use_pure = True
     image_embedding_dim = 512
-    text_embedding_dim = 1024
+    text_embedding_dim = 384
 
     def to_json(self):
         config_dict = {
@@ -78,3 +79,7 @@ class Settings:
     text_search_limit: int = 50
     text2sql_num_tries: int = 3
     rerank_result_limit: int = 50
+
+    # Embeddings config
+    image_embedding_name = "ViT-B/32"
+    text_embedding_name = "sentence-transformers/all-MiniLM-L6-v2"
