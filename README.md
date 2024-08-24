@@ -61,19 +61,7 @@ To interact with the API using Python, follow these steps:
   pip install requests
   ```
 
-#### Step 1: Encode Image to Base64
-Convert your image to a base64 string, which is needed for sending images via the API.
-
-```python
-import base64
-
-image_path = "./backend/assets/0309434009.jpg"
-with open(image_path, "rb") as f:
-    image_bytes = f.read()
-image_base64 = base64.b64encode(image_bytes).decode("utf-8")
-```
-
-#### Step 2: Send a POST Request with Text Only
+#### Step 1: Send a POST Request with Text Only
 
 ```python
 import requests
@@ -84,7 +72,7 @@ response = requests.post(f"{BASE_URL}/api/search", json=payload)
 print(response.json())
 ```
 
-#### Step 3: Send a POST Request with Image Only
+#### Step 2: Send a POST Request with Image Only
 
 ```python
 payload = {"attached_image": image_base64}
@@ -92,7 +80,7 @@ response = requests.post(f"{BASE_URL}/api/search", json=payload)
 print(response.json())
 ```
 
-#### Step 4: Send a POST Request with Both Image and Text
+#### Step 3: Send a POST Request with Both Image and Text
 
 ```python
 payload = {
@@ -103,7 +91,7 @@ response = requests.post(f"{BASE_URL}/api/search", json=payload)
 print(response.json())
 ```
 
-#### Step 5: Retrieve the Catalogue with a GET Request
+#### Step 4: Retrieve the Catalogue with a GET Request
 
 ```python
 response = requests.get(f"{BASE_URL}/api/catalouge")
