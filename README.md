@@ -40,11 +40,7 @@ pytest test_backend.py
 
 ## Using the API
 
-Currently, there are two hosted API servers. One of them is the embedding service, which is running on my device. Here is the base URL for that:
-
-```
-https://4630-27-4-59-166.ngrok-free.app
-```
+Currently, there are two hosted API servers. One of them is the embedding service and full-backend logic, where as the other is as a image-file storage system
 
 You don't need to do anything with this. To interact with the backend, run the backend server on your local machine and use the following base URL.
 
