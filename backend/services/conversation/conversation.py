@@ -14,7 +14,7 @@ class ConversationModule:
     def __init__(
         self,
         llm_config: Optional[LLMConfig] = LLMConfig,
-        history_length: Optional[int] = 5,
+        history_length: Optional[int] = 1,
         num_customer_queries: Optional[int] = 3,
     ) -> None:
         self.llm_config = llm_config

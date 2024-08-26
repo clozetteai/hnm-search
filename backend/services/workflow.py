@@ -64,7 +64,7 @@ class WorkFlow:
         is_catalouge_changed = False
 
         if customer_message is None and filepath is not None:
-            customer_message = "Show me similar items like this"
+            customer_message = "Show me similar items like this black top"
 
         if customer_message:
             print("Staring with text ...")
@@ -103,7 +103,7 @@ class WorkFlow:
                         print(f"Done text2sql, got {len(sql_response)} results")
                 print("=> Done text2sql")
 
-                response_from_text = response_from_text + sql_response
+                response_from_text = sql_response + response_from_text 
                 if self.catalouge_state != response_from_text:
                     is_catalouge_changed = True
 
@@ -112,6 +112,7 @@ class WorkFlow:
             response_from_image = self.search.perform_image_search_from_file(
                 filepath=filepath, limit=self.settings.image_search_limit
             )["results"]
+            print("=> Done with image search search")
 
             is_catalouge_changed = True
 

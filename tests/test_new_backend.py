@@ -1,3 +1,4 @@
+import json 
 import requests
 
 BASE_URL = "http://127.0.0.1:6500"
@@ -9,7 +10,7 @@ def test_only_test():
     }
     url = f"{BASE_URL}/api/search"
     response = requests.post(url, data=data)
-    print(response.status_code)
+    print(json.dumps(response.json(), indent=4))
 
 def test_only_image():
     url = f"{BASE_URL}/api/search"
@@ -36,6 +37,7 @@ def test_get_catalogue():
     url = f"{BASE_URL}/api/catalouge"
     response = requests.get(url)
     print(response.status_code)
+    print(json.dumps(response.json(), indent=4))
 
 
 def test_article_info():
@@ -47,11 +49,11 @@ def test_article_info():
 if __name__ == '__main__':
     print("=> Testing Only Text")
     test_only_test()
-    print("=> Testing Only Image")
-    test_only_image()
-    print("=> Testing Both Image and Text")
-    test_both_image_and_text()
-    print("=> Testing Catalogue")
-    test_get_catalogue()
-    print("=> Testing Article Info")
-    test_article_info()
+    # print("=> Testing Only Image")
+    # test_only_image()
+    # print("=> Testing Both Image and Text")
+    # test_both_image_and_text()
+    # print("=> Testing Catalogue")
+    # test_get_catalogue()
+    # print("=> Testing Article Info")
+    # test_article_info()
