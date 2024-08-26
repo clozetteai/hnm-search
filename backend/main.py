@@ -77,7 +77,7 @@ async def search(
 
         result = workflow.run(filepath, customer_message)
 
-        for content in result.catalouge:
+        for content in result.catalouge[:15]:
             image_url = (
                 f"{os.getenv('IMAGE_API_BASE_URL')}/api/image/0{content['article_id']}"
             )
@@ -86,7 +86,7 @@ async def search(
         return SearchResponse(
             bot_message=result.bot_message,
             is_catalouge_changed=result.is_catalouge_changed,
-            catalouge=result.catalouge,
+            catalouge=result.catalouge[:15],
         )
     except Exception as e:
         tb_str = traceback.format_exc()

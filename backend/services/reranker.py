@@ -7,6 +7,30 @@ from services.search import EmbeddingSearchService
 from services.tidb_connector import TiDBConfig, connect_to_tidb_engine
 from sqlalchemy.orm import Session
 
+rerank_prompt  = """
+Given the set of articles (a dict) and the description, rerank the results 
+based on the similarity of the description with the query.
+
+Here is the list of articles 
+
+{articles}
+
+here is what the user asked for:
+
+{query}
+
+Now rerank it and give me a list of top 10 articles from it.
+give the list of articles in return like this:
+
+[article1, article2, article3, article4 ....]
+
+list of articles: 
+"""
+
+def rerank_using_llm(article_ids: list[dict]):
+    pass 
+
+
 
 class Reranker:
     def __init__(

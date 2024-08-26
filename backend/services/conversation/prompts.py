@@ -55,7 +55,7 @@ If you think, use has not entered in chat, what he wants, then you can return em
 # NUMBER OF QUERIES TO BE GENERATED: {self.num_queries}
 
 # CONVERSATION: 
-{json.dumps(self.message_list, indent=2)}
+{json.dumps(self.message_list[-2:], indent=2)}
 
 # OUTPUT FORMAT: # if you think, user has asked about some clothing product
 [
@@ -75,7 +75,7 @@ user has ended, and list is at CONVERSATION. Now generate a good formal and yet 
 the search is completed. Also create one for when search couldn't find any data. Keep the text short and concise.
 
 # CONVERSATION: 
-{json.dumps(self.message_list, indent=2)}
+{json.dumps(self.message_list[-2:], indent=2)}
 """
             " + "
             """
